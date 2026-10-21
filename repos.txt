@@ -1,4 +1,8 @@
 # name  origin  [upstream]
-claude-settings-example  git@gitlab.com:gsjung_impactAI/claude-settings-example.git
-three-man-team           git@github.com:dreamwayjgs/three-man-team.git  https://github.com/russelleNVy/three-man-team.git
-tmt-cli                  git@github.com:dreamwayjgs/tmt-cli.git
+# https URLs work everywhere; for ssh run once per machine:
+#   git config --global url."git@github.com:".insteadOf https://github.com/
+#   git config --global url."git@gitlab.com:".insteadOf https://gitlab.com/
+# tmt-cli is private: https clone needs `gh auth login` (+ `gh auth setup-git`).
+claude-settings-example  https://gitlab.com/gsjung_impactAI/claude-settings-example.git
+three-man-team           https://github.com/dreamwayjgs/three-man-team.git  https://github.com/russelleNVy/three-man-team.git
+tmt-cli                  https://github.com/dreamwayjgs/tmt-cli.git
