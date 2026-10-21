@@ -18,5 +18,5 @@
 의존 방향: 역할 파일 문구 변경 → claude-settings-example(이슈) → 포크 템플릿. tmt-cli는 역할 파일·포크를 직접 고치지 않는다.
 
 - 배포본(`~/.claude/CLAUDE.md` 등)을 직접 고치지 말고 claude-settings-example에서 고친 뒤 build한다.
-- tmt-cli를 옮기거나 재설치하면 `tmt-cli/`에서 `npm link`를 다시 한다.
+- tmt-cli를 옮기거나 재설치하면 `tmt-cli/`에서 `npm install && npm run build` 후 `npm link`를 다시 한다 (`dist/`는 추적하지 않는다).
 - foreman: claude-settings-example·tmt-cli 모두 제외. 이 폴더에서도 실행하지 않는다.

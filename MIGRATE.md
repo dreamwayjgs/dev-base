@@ -7,6 +7,8 @@
 ```
 이 머신의 설정 repo들을 dev-base 배치로 옮기고 전역 규칙을 다시 빌드해줘. 단계마다 결과를 짧게 보고하고, 막히면 멈추고 물어봐. 지우거나 옮기기 전에는 대상 목록을 보여주고 내 승인을 받는다.
 Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다. bootstrap.sh 대신 repos.txt를 읽어 같은 git clone을 직접 실행한다.
+Windows에서 도구(gh·glab·npm 등)가 없어 보이면 없다고 판단하기 전에 PATH를 다시 읽는다: `$env:PATH = [Environment]::GetEnvironmentVariable('PATH','Machine') + ';' + [Environment]::GetEnvironmentVariable('PATH','User')`. 세션 시작 후 설치한 도구는 셸 PATH에 안 보인다.
+Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만 보이면 그 repo에 `git config core.fileMode false`를 설정하고 다시 확인한다 (Git for Windows clone은 기본 false, WSL 등 다른 git으로 만든 checkout에서 생긴다). repo 파일의 실행 비트는 바꾸지 않는다.
 
 0. 머신 실행 맥락: 공통 경로는 `~/.config/machine-context/local.md`다 (모든 harness 공유, repo 위치 무관).
    - 파일이 있으면 먼저 읽고 실행 제약을 따른다. 기존 내용은 보존한다.
@@ -18,8 +20,8 @@ Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다.
    - 이 머신에 필요 없는 repo(예: tmt-cli를 안 쓰는 머신)는 건너뛴다. 모르면 물어본다.
 3. 옮기기: 기존 clone마다 `git status`가 깨끗하고 미push 커밋(`git log @{u}..`)과 stash가 없을 때만 `<dev-base>/<name>`으로 `mv`한다. git이 추적하지 않는 로컬 파일(`.claude-settings.local`, `tmt.json`, `.tmt/` 등)은 mv로 그대로 따라온다. 더럽거나 미push가 있으면 멈추고 보고. 옛 경로에 호환 symlink는 만들지 않는다.
    옮긴 뒤 여파 처리:
-   - Claude Code가 있으면: `~/.claude*/projects/` 아래 옛 경로 slug 폴더(경로의 `/`를 `-`로 바꾼 이름)를 새 경로 slug로 rename한다 (세션 기록·프로젝트 메모리 유지). 새 slug 폴더가 이미 있으면 멈추고 보고.
-   - tmt-cli를 옮겼고 전역 `tmt`가 있으면: `<dev-base>/tmt-cli`에서 `npm link` 후 `tmt --help` 확인.
+   - Claude Code가 있으면: `~/.claude*/projects/` 아래 옛 경로 slug 폴더(절대경로의 영숫자 아닌 문자를 모두 `-`로 바꾼 이름. `/`뿐 아니라 `_`·`.`, Windows의 `:`·`\`도 바뀐다 — 예: `C:\Users\me\local_dev` → `C--Users-me-local-dev`)를 새 경로 slug로 rename한다. 계산하지 말고 `projects/` 목록에서 repo 이름으로 찾아 확인한다 (세션 기록·프로젝트 메모리 유지). 새 slug 폴더가 이미 있으면 멈추고 보고.
+   - tmt-cli를 옮겼고 전역 `tmt`가 있으면: `<dev-base>/tmt-cli`에서 `npm install && npm run build` 후 `npm link`, `tmt --help` 확인. `dist/`는 추적하지 않아 빌드 전에는 link해도 `tmt`가 생기지 않는다.
    - 옛 경로 문자열을 설정 파일에서 찾는다: `~/.config`, `~/.claude*/settings*.json`, `~/.omp/agent`, 셸 rc 파일, crontab. 백업·히스토리·로그·세션 DB는 제외. 찾은 곳은 목록으로 보여주고 승인 후 고친다. 원격 명령 안의 경로(ssh로 다른 머신에서 실행되는 부분)는 그 머신 경로라 고치지 않는다.
    - repo 안 문서에 옛 절대경로가 있으면 과거 기록은 고치지 말고 보고만 한다.
 4. 빠진 repo 받기: `<dev-base>/bootstrap.sh [name...]`. ssh를 쓰려면 repos.txt 머리 주석의 `insteadOf` 설정을 먼저 한다. tmt-cli는 private이라 https면 `gh auth login`·`gh auth setup-git`이 필요하다. 인증이 없으면 tmt-cli는 건너뛰고 보고.
