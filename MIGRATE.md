@@ -8,7 +8,10 @@
 이 머신의 설정 repo들을 dev-base 배치로 옮기고 전역 규칙을 다시 빌드해줘. 단계마다 결과를 짧게 보고하고, 막히면 멈추고 물어봐. 지우거나 옮기기 전에는 대상 목록을 보여주고 내 승인을 받는다.
 Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다. bootstrap.sh 대신 repos.txt를 읽어 같은 git clone을 직접 실행한다.
 
-0. `~/.config/machine-context/local.md`가 있으면 읽고 실행 제약을 따른다.
+0. 머신 실행 맥락: 공통 경로는 `~/.config/machine-context/local.md`다 (모든 harness 공유, repo 위치 무관).
+   - 파일이 있으면 먼저 읽고 실행 제약을 따른다. 기존 내용은 보존한다.
+   - 옛 claude-settings-example clone의 `machine-context/local.md`도 있으면 확인한다. 공통 경로가 없으면 부모 디렉터리를 만들고 복사한다. 양쪽이 다르면 덮어쓰지 말고 물어본다. 원본 삭제는 별도 승인을 받는다.
+   - 양쪽 모두 없으면 필요한 머신 제약을 물어보고, 동의한 내용만 공통 경로에 작성한다. 불필요하면 만들지 않는다. 다른 머신의 수치·경로를 복사하거나 비밀값을 기록하지 않는다.
 1. dev-base 위치: 이 파일이 있는 폴더가 dev-base다. 위치가 다른 머신 관례와 다르면(예: 기본 `~/development/personal/dev-base`) 지금 옮길지 물어본다. 이후 `<dev-base>`라고 쓴다.
 2. 기존 clone 찾기: repos.txt의 각 name에 대해 이 머신의 기존 clone을 찾는다 (예: `~/claude-settings-example`, `~/development/**/tmt-cli`, `~/deploy/<name>`). origin URL이 repos.txt와 같은 repo인지(ssh/https 차이는 무시) 확인한다.
    - three-man-team의 옛 checkout `~/.claude*/skills/three-man-team`은 옮기지 않는다 (6단계에서 정리).
@@ -20,7 +23,13 @@ Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다.
    - 옛 경로 문자열을 설정 파일에서 찾는다: `~/.config`, `~/.claude*/settings*.json`, `~/.omp/agent`, 셸 rc 파일, crontab. 백업·히스토리·로그·세션 DB는 제외. 찾은 곳은 목록으로 보여주고 승인 후 고친다. 원격 명령 안의 경로(ssh로 다른 머신에서 실행되는 부분)는 그 머신 경로라 고치지 않는다.
    - repo 안 문서에 옛 절대경로가 있으면 과거 기록은 고치지 말고 보고만 한다.
 4. 빠진 repo 받기: `<dev-base>/bootstrap.sh [name...]`. ssh를 쓰려면 repos.txt 머리 주석의 `insteadOf` 설정을 먼저 한다. tmt-cli는 private이라 https면 `gh auth login`·`gh auth setup-git`이 필요하다. 인증이 없으면 tmt-cli는 건너뛰고 보고.
-5. 전역 규칙 빌드: `<dev-base>/claude-settings-example/prompts/tmt-machine-migrate.md`를 읽고 그 절차대로 진행한다 (빌드가 `~/.config/agent-rules/`에 템플릿을 배포하고, 옛 harness별 templates 사본을 정리한다).
+5. 업데이트: `<dev-base>/UPDATE.md`를 읽고 그 절차(pull·caveman·빌드·검증)대로 진행한다. UPDATE의 검증까지 통과해야 다음으로 간다.
+5a. 밀린 일회성 정리 (해당하는 것만, 지우기 전 목록 승인):
+   - 옛 템플릿 사본: `~/.claude/templates/`, `~/.config/opencode/templates/`, `~/.omp/agent/templates/`, `~/.config/crush/templates/`의 `project-rules.md`·`.claudeignore`·`OPERATOR.md`를 삭제하고 빈 폴더면 폴더도 지운다. 목록에 없는 파일이 있으면 지우지 말고 보고.
+   - 옛 스킬 사본: `~/.config/opencode/skills`·`~/.config/crush/skills`에 caveman·ponytail 사본이 있으면 목록만 보고하고 지우지 않는다.
+   - caveman 훅 중복(2026-10-13): `~/.claude*/settings.json`(워커 폴더 포함)의 `hooks`에 `caveman-activate.js`·`caveman-mode-tracker.js`를 부르는 activation·mode-tracker 등록이 있으면 지운다 (플러그인 manifest가 같은 훅을 등록한다). statusLine 설정과 `~/.claude/hooks/` 파일은 건드리지 않는다.
+   - omp 마켓플레이스 플러그인(2026-10-13): `omp plugin list`에 `ponytail@ponytail`·`caveman@...` 같은 스킬 플러그인이 있으면 `omp plugin uninstall <id>`. 스킬 소스는 `agent-skills.txt` 하나다. `omp plugin doctor`의 `package_manifest: Not created yet`는 정보성 경고라 그대로 둔다.
+   - qmd 폐기(2026-10-13): Claude Code에 `qmd@qmd` 플러그인이 있으면 `claude plugin disable qmd@qmd`, `~/.claude*/settings.json`의 `permissions.allow`에서 `mcp__plugin_qmd_qmd__*` 항목을 지운다. `enabledPlugins`의 `"qmd@qmd": false`와 `extraKnownMarketplaces`의 `qmd`는 남겨도 된다. `~/.agents/skills/qmd`가 있으면 삭제한다. qmd CLI와 인덱스는 지우지 않는다.
 6. 옛 three-man-team checkout 정리: `~/.claude*/skills/three-man-team`마다 `git status` 깨끗, 미push 커밋·stash 없음, 로컬 브랜치가 origin에 다 있음을 확인한 뒤 삭제한다. 하나라도 걸리면 멈추고 보고.
 7. 검증 (표로 보고):
    - `<dev-base>`에 필요한 repo가 다 있고 각 `git status -sb`가 `main...origin/main`
@@ -29,4 +38,7 @@ Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다.
    - `~/.claude*/skills/three-man-team` 없음
    - 3단계에서 찾은 설정 파일에 옛 경로 없음
    - 전역 `tmt`가 있으면 `<dev-base>/tmt-cli`를 가리킴
+   - 5a 옛 템플릿 경로에 `project-rules.md` 없음, `~/.agents/skills/qmd` 없음, 생성된 전역 규칙 파일과 `~/.claude/settings.json`에 `qmd` 문자열 없음(`"qmd@qmd": false`는 허용)
+   - `omp plugin list`에 매니페스트 스킬과 겹치는 플러그인이 없고 `omp skill list`에 `name collision` 없음
+   - Claude 머신: `~/.agents/skills/caveman/SKILL.md`에 lite/full 강도 표가 없음, `settings.json`들에 caveman activation·mode-tracker 훅 등록이 없음
 ```
