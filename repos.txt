@@ -1,0 +1,4 @@
+# name  origin  [upstream]
+claude-settings-example  git@gitlab.com:gsjung_impactAI/claude-settings-example.git
+three-man-team           git@github.com:dreamwayjgs/three-man-team.git  https://github.com/russelleNVy/three-man-team.git
+tmt-cli                  git@github.com:dreamwayjgs/tmt-cli.git
