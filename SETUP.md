@@ -11,7 +11,7 @@
 
 | 경로 | remote | 역할 |
 |---|---|---|
-| `claude-settings-example/` | GitLab `gsjung_impactAI/claude-settings-example` (`glab`) | 전역 규칙·템플릿 source-of-truth. `build-claude-md.sh`(Windows는 `build-rules.ps1`, 소유자 실행)가 harness별 전역 규칙 파일과 `~/.config/agent-rules/`(템플릿)로 **복사** 배포. 포크 관리 주체 |
+| `claude-settings-example/` | GitHub `dreamwayjgs/claude-settings-example` (public; 2026-10-21 GitLab에서 이전, 옛 이슈 #1~#11은 GitLab에 남음) | 전역 규칙·템플릿 source-of-truth. `build-claude-md.sh`(Windows는 `build-rules.ps1`, 소유자 실행)가 harness별 전역 규칙 파일과 `~/.config/agent-rules/`(템플릿)로 **복사** 배포. 포크 관리 주체 |
 | `three-man-team/` | GitHub `dreamwayjgs/three-man-team` (public 포크, `upstream` = 원본) | 역할 템플릿. 이 clone이 정본. claude-settings-example build가 `templates/`를 `~/.config/agent-rules/three-man-team/`로 복사(+ `SOURCE`에 clone 경로·커밋)하고, 전역 규칙은 그 복사본을 읽는다. 포크 push 규칙은 claude-settings-example `CLAUDE.md`를 따른다 |
 | `tmt-cli/` | GitHub `dreamwayjgs/tmt-cli` | 역할 세션 오케스트레이터 CLI. 전역 `tmt`는 `npm link`로 이 폴더를 가리킨다. `tmt init` 마커 블록·CLI 계약만 소유 |
 
