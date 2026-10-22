@@ -15,7 +15,13 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    pull 전에 `<dev-base>`를 먼저 pull한 뒤, 각 repo의 `git config --get remote.origin.url`이 repos.txt URL과 같은지 확인하고 다르면 `git remote set-url origin <repos.txt URL>` (ssh는 repos.txt 주석의 `insteadOf`로. `git remote get-url`은 insteadOf가 적용된 값을 보여 주므로 비교에 쓰지 않는다). 옛 origin에만 있는 커밋이 있으면 멈추고 보고.
    `<dev-base>` pull로 이 파일(`UPDATE.md`)이 바뀌었으면 다시 읽고 새 내용대로 1단계부터 이어간다.
    Windows에서 거의 모든 파일이 modified로 나오면 줄바꿈(`core.autocrlf`) 문제다. reset하지 말고 `git diff --stat`·`git config core.autocrlf` 결과를 보고.
-2. caveman (Claude Code가 있는 머신만, 빌드 전): `claude plugin update caveman@caveman` 후 설치된 플러그인 버전이 `claude-settings-example/agent-skills.txt`의 caveman ref(`v<버전>`)와 같은지 확인한다. 플러그인이 더 새 버전이면 멈추고 보고 — 매니페스트 ref는 소유자만 올린다. 같으면 `~/.claude/plugins/cache/caveman/caveman/<version>/src/hooks/`의 `package.json`·`caveman-config.js`·`caveman-parse.js`·`caveman-activate.js`·`caveman-mode-tracker.js`·`caveman-stats.js`·`caveman-statusline.sh`·`caveman-statusline.ps1`·`cavecrew-model-overrides.js`를 `~/.claude/hooks/`에 덮어쓴다 (statusline 배지용). 목록은 같은 폴더 `install.ps1`의 `$HookFiles`와 같다. 다르면 그 목록을 따르고 보고한다 — 빠진 형제 파일이 있으면 훅이 "install is incomplete"를 내고 기능을 줄여 돈다.
+2. caveman·ponytail (Claude Code가 있는 머신만, 빌드 전): `claude-settings-example/agent-skills.txt`의 caveman·ponytail 줄마다, 플러그인을 올리기 전에 upstream 최신 semver 태그(`git ls-remote --tags --refs https://github.com/<repo>`)를 매니페스트 ref(`v<버전>`)와 비교한다.
+   - 같으면 그대로 간다.
+   - 같은 major의 더 새 태그면: 그 줄 ref와 머리 주석의 버전을 그 태그로 올리고, ponytail이면 `opencode-plugins/ponytail-v2/README.md`의 npm 버전도 같이 올려 claude-settings-example에 커밋한다. push는 내 승인 후.
+   - major가 다르면 멈추고 보고한다. 매니페스트·플러그인 모두 올리지 않는다.
+   그다음 `claude plugin marketplace update <이름>` → `claude plugin update <이름>@<이름>` 후 설치된 플러그인 버전이 매니페스트 ref와 같은지 확인한다. 다르면(마켓플레이스가 태그보다 늦는 등) 멈추고 보고.
+   ponytail 5.3 이상이면 band·ledger를 끈다 (`claude-settings-example/claude-settings.md` §5-1): `claude plugin configure ponytail@ponytail`에서 ledger가 설정 안 됨이면 `echo '{"ledger":"false"}' | claude plugin configure ponytail@ponytail --values-stdin`, `~/.claude/.ponytail-band`가 없으면 내용 `off`로 만든다. 다른 Claude 계정 폴더도 ponytail 플러그인이 켜져 있으면 같은 처리를 그 `CLAUDE_CONFIG_DIR`로 한다.
+   caveman 버전이 맞으면 `~/.claude/plugins/cache/caveman/caveman/<version>/src/hooks/`의 `package.json`·`caveman-config.js`·`caveman-parse.js`·`caveman-activate.js`·`caveman-mode-tracker.js`·`caveman-stats.js`·`caveman-statusline.sh`·`caveman-statusline.ps1`·`cavecrew-model-overrides.js`를 `~/.claude/hooks/`에 덮어쓴다 (statusline 배지용). 목록은 같은 폴더 `install.ps1`의 `$HookFiles`와 같다. 다르면 그 목록을 따르고 보고한다 — 빠진 형제 파일이 있으면 훅이 "install is incomplete"를 내고 기능을 줄여 돈다.
 3. 빌드 (`<dev-base>/claude-settings-example`에서):
    - Linux·macOS·WSL: `./build-claude-md.sh`
    - Windows: `pwsh -File .\build-rules.ps1`. bash 셸에서 실행 중이어도(예: Claude Code의 Git Bash) ps1을 쓴다. pwsh 7이 없으면 멈추고 보고. 실행 정책 오류가 나면 `-ExecutionPolicy Bypass`를 붙인다.
@@ -33,7 +39,8 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - `agent-skills.txt`의 각 줄(repo, ref, 스킬 이름들)에 대해 `~/.agents/skills/<이름>/SKILL.md`가 있고 `~/.agents/.skill-lock.json`의 그 스킬 `ref`가 줄의 ref와 같음. 개수·버전을 외우지 말고 매니페스트에서 읽는다
    - Claude 머신: 설치된 caveman 플러그인 버전이 매니페스트 caveman ref와 같음, 토큰 최적화 표의 caveman 열이 `caveman`
    - Claude Code·OpenCode가 있는 머신: caveman·ponytail `config.json`이 `{"defaultMode":"off"}` (Linux·macOS·WSL `~/.config/<이름>/`, Windows `%APPDATA%\<이름>\`). 없으면 `claude-settings-example/claude-settings.md` §5-1대로 만들고 보고, 다른 값이면 고치지 말고 보고. `CAVEMAN_DEFAULT_MODE`·`PONYTAIL_DEFAULT_MODE` 환경변수가 off 아닌 값이면 보고(파일보다 우선한다)
-   - OpenCode V2 머신: 4단계 "검증" 절의 (즉시) 항목
+   - OpenCode V2 머신: 4단계 "검증" 절의 (즉시) 항목, `~/.config/opencode/plugins/ponytail/node_modules/@dietrichgebert/ponytail/package.json`의 `version`이 매니페스트 ponytail 태그(`v` 제외)와 같음. 다르면 `opencode-plugins/ponytail-v2/README.md` 설치 절차로 재설치
+   - Claude 머신, ponytail 5.3 이상: ledger `false`(`claude plugin configure ponytail@ponytail`), `~/.claude/.ponytail-band` = `off`
    행동 검증 (모델 호출, 비용이 들어 실행 전 나에게 승인을 받는다. 승인 없으면 `NOT RUN`):
    - OpenCode V2 머신: "검증" 절의 (행동) 항목 중 역할 없는 `opencode run`
    - 역할 세션 확인은 여기서 띄우지 않고 `NOT RUN`으로 적는다 (역할 세션은 별도 명시 승인 대상)
