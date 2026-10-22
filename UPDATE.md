@@ -20,7 +20,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - Windows: `pwsh -File .\build-rules.ps1`. bash 셸에서 실행 중이어도(예: Claude Code의 Git Bash) ps1을 쓴다. pwsh 7이 없으면 멈추고 보고. 실행 정책 오류가 나면 `-ExecutionPolicy Bypass`를 붙인다.
    - Foreman 질문이 나오면 나에게 물어봐.
    - 빌드는 전역 규칙을 harness별 경로에, 템플릿을 `~/.config/agent-rules/`에 쓰고, `agent-skills.txt`의 스킬을 `npx skills add`로 `~/.agents/skills`에 설치한다 (node·네트워크 필요). `npx`가 없거나 dev-base 배치가 아니면 아무것도 쓰지 않고 실패하고, 스킬 설치가 실패하면 규칙은 써진 뒤 멈춘다. 어느 쪽이든 멈추고 출력 전체를 보고. `build-rules.ps1 -TargetHome <다른 경로>`는 규칙·템플릿만 그 경로에 쓰고 스킬 설치는 건너뛴다(격리 검증용).
-   - 빌드는 Claude 계정 폴더 중 `~/.claude`·`~/.claude-personal`에만 CLAUDE.md를 쓴다. 다른 계정 폴더(예: `~/.claude-admin`)가 있으면 `~/.claude/CLAUDE.md`를 그 폴더에 복사한다.
+   - 빌드는 Claude 설정 폴더 중 `~/.claude`에만 CLAUDE.md를 쓴다. 다른 계정 폴더(예: `~/.claude-personal`·`~/.claude-admin`)가 있으면 쓰는 폴더인지 나에게 물은 뒤, 폴더마다 `./build-claude-md.sh --targets claude --claude-dir <폴더명>`(Windows `-Targets claude -ClaudeDir <폴더명>`)으로 한 번 더 빌드한다. `~/.claude-worker`는 대상이 아니다 (`WORKER.md`).
 4. OpenCode V2가 있는 머신(`opencode --version`이 2.x)만: caveman은 `claude-settings-example/opencode-v2-migration.md` 절차 4(upstream 파일 복사, 설치기 금지, `~/.config/opencode/AGENTS.md`에 `<!-- caveman-begin -->` 블록이 있으면 지우지 말고 보고), ponytail은 `claude-settings-example/opencode-plugins/ponytail-v2/README.md` 설치 절차로 어댑터와 의존 파일을 맞추고, `opencode-v2-migration.md`의 "검증" 절을 돌린다.
 5. tmt-cli가 있고 전역 `tmt`가 이 clone을 가리키면: `<dev-base>/tmt-cli`에서 `npm run build` 후 `tmt --help`.
 6. 검증 (표로 보고):

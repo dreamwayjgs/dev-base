@@ -32,6 +32,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - caveman 훅 중복(2026-10-13): `~/.claude*/settings.json`(워커 폴더 포함)의 `hooks`에 `caveman-activate.js`·`caveman-mode-tracker.js`를 부르는 activation·mode-tracker 등록이 있으면 지운다 (플러그인 manifest가 같은 훅을 등록한다). statusLine 설정과 `~/.claude/hooks/` 파일은 건드리지 않는다.
    - omp 마켓플레이스 플러그인(2026-10-13): `omp plugin list`에 `ponytail@ponytail`·`caveman@...` 같은 스킬 플러그인이 있으면 `omp plugin uninstall <id>`. 스킬 소스는 `agent-skills.txt` 하나다. `omp plugin doctor`의 `package_manifest: Not created yet`는 정보성 경고라 그대로 둔다.
    - qmd 폐기(2026-10-13): Claude Code에 `qmd@qmd` 플러그인이 있으면 `claude plugin disable qmd@qmd`, `~/.claude*/settings.json`의 `permissions.allow`에서 `mcp__plugin_qmd_qmd__*` 항목을 지운다. `enabledPlugins`의 `"qmd@qmd": false`와 `extraKnownMarketplaces`의 `qmd`는 남겨도 된다. `~/.agents/skills/qmd`가 있으면 삭제한다. qmd CLI와 인덱스는 지우지 않는다.
+5b. `~/.claude-worker`가 있거나 이 머신에서 tmt-cli claude 워커를 쓰면: `<dev-base>/WORKER.md` 절차로 점검·생성한다.
 6. 옛 three-man-team checkout 정리: `~/.claude*/skills/three-man-team`마다 `git status` 깨끗, 미push 커밋·stash 없음, 로컬 브랜치가 origin에 다 있음을 확인한 뒤 삭제한다. 하나라도 걸리면 멈추고 보고.
 7. 검증 (표로 보고):
    - `<dev-base>`에 필요한 repo가 다 있고 각 `git status -sb`가 `main...origin/main`
