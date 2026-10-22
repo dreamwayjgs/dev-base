@@ -9,6 +9,8 @@
 Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다. bootstrap.sh 대신 repos.txt를 읽어 같은 git clone을 직접 실행한다.
 Windows에서 도구(gh·glab·npm 등)가 없어 보이면 없다고 판단하기 전에 PATH를 다시 읽는다: `$env:PATH = [Environment]::GetEnvironmentVariable('PATH','Machine') + ';' + [Environment]::GetEnvironmentVariable('PATH','User')`. 세션 시작 후 설치한 도구는 셸 PATH에 안 보인다.
 Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만 보이면 그 repo에 `git config core.fileMode false`를 설정하고 다시 확인한다 (Git for Windows clone은 기본 false, WSL 등 다른 git으로 만든 checkout에서 생긴다). repo 파일의 실행 비트는 바꾸지 않는다.
+시작 전 절차 최신화: 0단계보다 먼저 `<dev-base>`에서 `git status --short`가 비어 있는지 보고 `git fetch origin`을 한다. behind만이면 `git pull --ff-only`, 더럽거나 ahead·diverged면 멈추고 보고. pull로 `MIGRATE.md`·`SETUP.md`·`UPDATE.md`·`WORKER.md`가 바뀌었으면 바뀐 파일을 다시 읽고 새 내용대로 처음부터 진행한다.
+도중 변경: 이후 단계(UPDATE 1단계 등)의 dev-base pull로 절차 파일이 또 바뀌면 바뀐 파일을 다시 읽고, 이미 끝낸 단계 중 새 내용과 어긋나는 것을 목록으로 보고한 뒤 계속할지 묻는다. 되돌리기·재실행은 승인 후에만 한다.
 
 0. 머신 실행 맥락: 공통 경로는 `~/.config/machine-context/local.md`다 (모든 harness 공유, repo 위치 무관).
    - 파일이 있으면 먼저 읽고 실행 제약을 따른다. 기존 내용은 보존한다.
