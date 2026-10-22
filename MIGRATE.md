@@ -27,7 +27,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - 옛 경로 문자열을 설정 파일에서 찾는다: `~/.config`, `~/.claude*/settings*.json`, `~/.omp/agent`, 셸 rc 파일, crontab. 백업·히스토리·로그·세션 DB는 제외. 찾은 곳은 목록으로 보여주고 승인 후 고친다. 원격 명령 안의 경로(ssh로 다른 머신에서 실행되는 부분)는 그 머신 경로라 고치지 않는다.
    - repo 안 문서에 옛 절대경로가 있으면 과거 기록은 고치지 말고 보고만 한다.
 4. 빠진 repo 받기: `<dev-base>/bootstrap.sh [name...]`. ssh를 쓰려면 repos.txt 머리 주석의 `insteadOf` 설정을 먼저 한다. tmt-cli는 private이라 https면 `gh auth login`·`gh auth setup-git`이 필요하다. 인증이 없으면 tmt-cli는 건너뛰고 보고.
-5. 업데이트: `<dev-base>/UPDATE.md`를 읽고 그 절차(pull·caveman·빌드·검증)대로 진행한다. UPDATE의 검증까지 통과해야 다음으로 간다.
+5. 업데이트: `<dev-base>/UPDATE.md`를 읽고 그 절차(pull·caveman·빌드·검증)대로 진행한다. UPDATE 6단계의 즉시 게이트가 모두 PASS여야 다음으로 간다 (행동 검증·지연 관찰은 막지 않는다).
 5a. 밀린 일회성 정리 (해당하는 것만, 지우기 전 목록 승인):
    - 옛 템플릿 사본: `~/.claude/templates/`, `~/.config/opencode/templates/`, `~/.omp/agent/templates/`, `~/.config/crush/templates/`의 `project-rules.md`·`.claudeignore`·`OPERATOR.md`를 삭제하고 빈 폴더면 폴더도 지운다. 목록에 없는 파일이 있으면 지우지 말고 보고.
    - 옛 스킬 사본: `~/.config/opencode/skills`·`~/.config/crush/skills`에 caveman·ponytail 사본이 있으면 목록만 보고하고 지우지 않는다.

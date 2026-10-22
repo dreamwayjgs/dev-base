@@ -22,12 +22,21 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - Foreman 질문이 나오면 나에게 물어봐.
    - 빌드는 전역 규칙을 harness별 경로에, 템플릿을 `~/.config/agent-rules/`에 쓰고, `agent-skills.txt`의 스킬을 `npx skills add`로 `~/.agents/skills`에 설치한다 (node·네트워크 필요). `npx`가 없거나 dev-base 배치가 아니면 아무것도 쓰지 않고 실패하고, 스킬 설치가 실패하면 규칙은 써진 뒤 멈춘다. 어느 쪽이든 멈추고 출력 전체를 보고. `build-rules.ps1 -TargetHome <다른 경로>`는 규칙·템플릿만 그 경로에 쓰고 스킬 설치는 건너뛴다(격리 검증용).
    - 빌드는 Claude 설정 폴더 중 `~/.claude`에만 CLAUDE.md를 쓴다. 다른 계정 폴더(예: `~/.claude-personal`·`~/.claude-admin`)가 있으면 쓰는 폴더인지 나에게 물은 뒤, 폴더마다 `./build-claude-md.sh --targets claude --claude-dir <폴더명>`(Windows `-Targets claude -ClaudeDir <폴더명>`)으로 한 번 더 빌드한다. `~/.claude-worker`는 대상이 아니다 (`WORKER.md`).
-4. OpenCode V2가 있는 머신(`opencode --version`이 2.x)만: caveman은 `claude-settings-example/opencode-v2-migration.md` 절차 4(upstream 파일 복사, 설치기 금지, `~/.config/opencode/AGENTS.md`에 `<!-- caveman-begin -->` 블록이 있으면 지우지 말고 보고), ponytail은 `claude-settings-example/opencode-plugins/ponytail-v2/README.md` 설치 절차로 어댑터와 의존 파일을 맞추고, `opencode-v2-migration.md`의 "검증" 절을 돌린다.
+4. OpenCode V2가 있는 머신(`opencode --version`이 2.x)만: caveman은 `claude-settings-example/opencode-v2-migration.md` 절차 4(upstream 파일 복사, 설치기 금지, `~/.config/opencode/AGENTS.md`에 `<!-- caveman-begin -->` 블록이 있으면 지우지 말고 보고), ponytail은 `claude-settings-example/opencode-plugins/ponytail-v2/README.md` 설치 절차로 어댑터와 의존 파일을 맞추고, `opencode-v2-migration.md`의 "검증" 절 항목을 표시(즉시·행동·지연)대로 6단계 분류에 넣는다.
+   V2인데 `~/.config/opencode/plugins/`나 `~/.config/opencode/opencode.json`이 없으면 첫 설치다: `opencode-v2-migration.md` 절차 4~6(caveman·ponytail·config)을 따르고(1~3단계 V1 백업·V2 설치는 건너뜀), `opencode serve --service`가 떠 있으면 재시작한다.
 5. tmt-cli가 있고 전역 `tmt`가 이 clone을 가리키면: `<dev-base>/tmt-cli`에서 `npm run build` 후 `tmt --help`.
-6. 검증 (표로 보고):
+6. 검증 (표로 보고). 각 항목 상태는 `PASS`·`FAIL`·`NOT RUN`·`DEFERRED`·`EXCEPTION`(내가 승인한 예외) 중 하나로 적는다. 빌드가 성공했다는 이유로 돌리지 않은 항목을 PASS로 적지 않는다.
+   즉시 게이트 (모델 호출 없음, 전부 PASS여야 완료):
    - 각 repo `git status -sb`가 `main...origin/main`, ahead/behind 없음. `git -C <dev-base> status --short`가 비어 있음
    - `~/.config/agent-rules/`에 `project-rules.md`, `.claudeignore`, `three-man-team/templates/project-folder/ROGER.md`, `three-man-team/templates/optional/OPERATOR.md` 존재, `three-man-team/SOURCE`의 `commit=`이 `<dev-base>/three-man-team` HEAD와 같음
    - 생성된 전역 규칙 파일(이 harness 것)에 `~/.config/agent-rules/` 문자열이 있고, `~/.config/machine-context/local.md`를 작업 전에 읽는 지침이 있음
    - `agent-skills.txt`의 각 줄(repo, ref, 스킬 이름들)에 대해 `~/.agents/skills/<이름>/SKILL.md`가 있고 `~/.agents/.skill-lock.json`의 그 스킬 `ref`가 줄의 ref와 같음. 개수·버전을 외우지 말고 매니페스트에서 읽는다
    - Claude 머신: 설치된 caveman 플러그인 버전이 매니페스트 caveman ref와 같음, 토큰 최적화 표의 caveman 열이 `caveman`
+   - Claude Code·OpenCode가 있는 머신: caveman·ponytail `config.json`이 `{"defaultMode":"off"}` (Linux·macOS·WSL `~/.config/<이름>/`, Windows `%APPDATA%\<이름>\`). 없으면 `claude-settings-example/claude-settings.md` §5-1대로 만들고 보고, 다른 값이면 고치지 말고 보고. `CAVEMAN_DEFAULT_MODE`·`PONYTAIL_DEFAULT_MODE` 환경변수가 off 아닌 값이면 보고(파일보다 우선한다)
+   - OpenCode V2 머신: 4단계 "검증" 절의 (즉시) 항목
+   행동 검증 (모델 호출, 비용이 들어 실행 전 나에게 승인을 받는다. 승인 없으면 `NOT RUN`):
+   - OpenCode V2 머신: "검증" 절의 (행동) 항목 중 역할 없는 `opencode run`
+   - 역할 세션 확인은 여기서 띄우지 않고 `NOT RUN`으로 적는다 (역할 세션은 별도 명시 승인 대상)
+   지연 관찰 (완료를 막지 않음, `DEFERRED`로 적고 관찰 시점을 쓴다):
+   - OpenCode V2 머신: "검증" 절의 (지연) 항목
 ```
