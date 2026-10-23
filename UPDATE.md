@@ -15,7 +15,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    pull 전에 `<dev-base>`를 먼저 pull한 뒤, 각 repo의 `git config --get remote.origin.url`이 repos.txt URL과 같은 repo인지 확인한다. 비교는 `host/owner/repo`로 정규화해서 한다(`https://`·`git@host:`·끝의 `.git` 제거). ssh/https 차이만 있으면 그대로 둔다. 다른 repo면 `git remote set-url origin <repos.txt URL>` (https 머신은 repos.txt 주석의 `insteadOf`로. `git remote get-url`은 insteadOf가 적용된 값을 보여 주므로 비교에 쓰지 않는다). 옛 origin에만 있는 커밋이 있으면 멈추고 보고.
    `<dev-base>` pull로 이 파일(`UPDATE.md`)이 바뀌었으면 다시 읽고 새 내용대로 1단계부터 이어간다.
    Windows에서 거의 모든 파일이 modified로 나오면 줄바꿈(`core.autocrlf`) 문제다. reset하지 말고 `git diff --stat`·`git config core.autocrlf` 결과를 보고.
-2. caveman·ponytail (Claude Code가 있는 머신만, 빌드 전): `claude-settings-example/agent-skills.txt`의 caveman·ponytail 줄마다, 플러그인을 올리기 전에 upstream 최신 semver 태그(`git ls-remote --tags --refs https://github.com/<repo>`)를 매니페스트 ref(`v<버전>`)와 비교한다.
+2. caveman·ponytail (Claude Code가 있는 머신만, 빌드 전). `claude`가 PATH에 없으면 이 단계와 6단계의 Claude 항목은 대상 아님(`N/A`)으로 적는다. 아래 `claude plugin ...` 명령이 이 버전에 없으면(`unknown command` 등) 다른 방법을 찾지 말고 `claude --version`과 함께 멈추고 보고한다: `claude-settings-example/agent-skills.txt`의 caveman·ponytail 줄마다, 플러그인을 올리기 전에 upstream 최신 semver 태그(`git ls-remote --tags --refs https://github.com/<repo>`)를 매니페스트 ref(`v<버전>`)와 비교한다.
    - 같으면 그대로 간다.
    - 같은 major의 더 새 태그면: 그 줄 ref와 머리 주석의 버전을 그 태그로 올리고, ponytail이면 `opencode-plugins/ponytail-v2/README.md`의 npm 버전도 같이 올려 claude-settings-example에 커밋한다. push는 내 승인 후.
    - major가 다르면 멈추고 보고한다. 매니페스트·플러그인 모두 올리지 않는다.
@@ -46,5 +46,6 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - 역할 세션 확인은 여기서 띄우지 않고 `NOT RUN`으로 적는다 (역할 세션은 별도 명시 승인 대상)
    지연 관찰 (완료를 막지 않음, `DEFERRED`로 적고 관찰 시점을 쓴다):
    - OpenCode V2 머신: "검증" 절의 (지연) 항목
-7. 검증 보고 후, 피드백 리포트를 만들지 나에게 묻는다. 원하면 `<dev-base>/prompts/feedback-report.md`대로 진행한다(이번 UPDATE 결과를 환경 항목에 쓴다). 원하지 않으면 끝낸다.
+7. 검증 보고 후 `~/.config/machine-context/local.md`의 "마지막 UPDATE" 줄을 갱신한다: 날짜, 즉시 게이트 결과(행동 검증은 PASS·NOT RUN 표기), 4개 repo HEAD 짧은 해시. 줄이 없으면 추가한다. 머신 별칭 줄이 없으면 나에게 물어 함께 적는다(서버 역할이 드러나는 이름은 피한다). local.md 파일이 없으면 만들지 말고 보고만 한다.
+8. 피드백 리포트를 만들지 나에게 묻는다. 원하면 `<dev-base>/prompts/feedback-report.md`대로 진행한다(이번 UPDATE 결과를 환경 항목에 쓴다). 원하지 않으면 끝낸다.
 ```
