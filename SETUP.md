@@ -6,6 +6,7 @@
 - 새 머신: 이 repo를 clone한 뒤 `./bootstrap.sh [name...]` (없는 repo만 clone, upstream remote 설정). 기존 clone이 있는 머신은 `MIGRATE.md` 절차를 따른다.
 - 설정 변경 반영: 각 머신에서 `UPDATE.md` (pull → build → 검증). 프로젝트 역할 파일 동기화는 `prompts/tmt-project-sync.md`.
 - tmt-cli claude 워커용 설정 폴더(선택): `WORKER.md`.
+- handoff 수명 규약(claude-settings-example #5) 도입: 기존 프로젝트는 `prompts/handoff-cleanup.md`(일회성, Step 사이). repo 공개·public 운영은 `prompts/repo-go-public.md`.
 - 사용 피드백(선택, 소유자 동의 후): `prompts/feedback-report.md`. 리포트는 머신 로컬 `~/.config/dev-base-feedback/`에 쓰고, 원본(`.private.md`)은 public repo에 올리지 않는다.
 - 머신·repo에 걸친 절차는 이 repo에 둔다. claude-settings-example에는 규칙 내용과 build 도구만 둔다.
 - 공통 템플릿 배포 경로는 harness 무관 `~/.config/agent-rules/`다. dev-base 밖에서 build하면 아무것도 쓰지 않고 멈춘다.
