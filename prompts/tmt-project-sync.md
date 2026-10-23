@@ -6,7 +6,7 @@
 쓰는 법: 코드블록 안쪽을 붙여 넣거나, 세션에 "`<이 파일 경로>` 보고 진행해"라고 한다. 파일을 받은 세션은 코드블록 안을 지시로, 그 밖은 실행 조건으로 읽는다.
 
 ```
-이 프로젝트의 three-man-team 역할 파일에 개인 포크 템플릿의 변경을 반영해줘. 덮어쓰지 말고 필요한 부분만 넣는다. 커밋은 내가 diff를 본 뒤에 한다.
+이 프로젝트의 three-man-team 역할 파일에 개인 포크 템플릿의 변경을, router(`CLAUDE.md`·`AGENTS.md`)에 공통 템플릿 블록을 반영해줘. 덮어쓰지 말고 필요한 부분만 넣는다. 커밋은 내가 diff를 본 뒤에 한다.
 
 준비
 1. `~/.config/agent-rules/three-man-team/SOURCE`의 `clone=` 경로를 `<checkout>`으로 쓴다 (dev-base의 포크 git clone). origin이 `dreamwayjgs/three-man-team`인지 확인하고 `git -C <checkout> fetch origin` 후 (a) clone HEAD == `origin/main`, (b) `SOURCE`의 `commit=` == clone HEAD를 확인한다. pull은 하지 않는다 (clone 갱신은 `UPDATE.md` 몫).
@@ -43,8 +43,9 @@
    - qmd 잔재 점검: 프로젝트 `CLAUDE.md`·`AGENTS.md`·역할 파일에서 `qmd`를 grep한다. 옛 전역 규칙("qmd search 우선", `qmd status` 신선도 확인)이 복사돼 있으면 그 문장만 지운다(2026-10-13 전역 규칙에서 폐기). 프로젝트가 자체 용도로 qmd를 쓰는 문장이면 지우지 말고 보고한다.
    - caveman 레벨 표기 점검(2026-10-13, caveman v3): 역할 파일·프로젝트 지침에서 `caveman (lite|full|ultra)`·`/caveman lite|full|ultra` 같은 강도 표기를 grep한다. 역할별 로드 지시면 `caveman`(스킬 하나)으로 바꾸고, 전역 표를 복사해 둔 옛 Token Optimization 절이면 그 절을 지운다(전역 표가 우선).
    - 스킬 경로 점검: 프로젝트 지침·역할 파일에서 `SKILL.md`·`skills/` 경로를 grep한다. 실존하지 않거나 harness 전용 경로(`~/.claude/skills/<name>`, `~/.claude/plugins/cache/...` 등)면 `~/.agents/skills/<name>/SKILL.md`로 바꾼다. 그 경로에도 없는 스킬이면 바꾸지 말고 보고한다.
-7. manifest.md: 이번 반영 기준인 포크 커밋 해시(`git -C <checkout> rev-parse --short origin/main`)를 `version`에 기록한다. 없으면 포크 `templates/project-folder/new-setup.md`의 manifest 형식으로 만든다. 이 값이 다음 동기화의 `<base>`다.
+7. router: `~/.config/agent-rules/project-rules.md`의 `<!-- tmt-rules:start -->`~`<!-- tmt-rules:end -->` 블록으로 프로젝트 `CLAUDE.md`·`AGENTS.md`의 같은 블록을 통째로 교체한다. 이 블록은 포크가 아니라 claude-settings-example 템플릿이라 4단계 diff에 나오지 않는다. 마커 밖과 `<!-- tmt-cli:start -->`~`<!-- tmt-cli:end -->` 블록은 건드리지 않는다. 마커가 없으면 템플릿 유래 절을 찾아 마커로 감싼 뒤 교체하고, 판단이 애매한 절은 목록으로 보고한다. 교체 후 두 파일이 같은지 확인한다.
+8. manifest.md: 이번 반영 기준인 포크 커밋 해시(`git -C <checkout> rev-parse --short origin/main`)를 `version`에 기록한다. 없으면 포크 `templates/project-folder/new-setup.md`의 manifest 형식으로 만든다. 이 값이 다음 동기화의 `<base>`다.
 
 보고
-8. 파일별로 정리한다: 적용한 hunk, 이미 있어서 건너뛴 것, 충돌로 보류한 것, OPERATOR 제안. 그다음 `git diff`를 보여준다. 커밋은 내 승인 후에 한다.
+9. 파일별로 정리한다: 적용한 hunk, router 블록 교체 여부, 이미 있어서 건너뛴 것, 충돌로 보류한 것, OPERATOR 제안. 그다음 `git diff`를 보여준다. 커밋은 내 승인 후에 한다.
 ```

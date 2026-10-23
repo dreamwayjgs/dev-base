@@ -4,7 +4,7 @@
 
 - dev-base 위치: 현재 clone 폴더가 기준이다. 정해진 기본 경로는 없고 옮기자고 하지 않는다. 처음 쓰는 머신이면 `~/.config/machine-context/local.md`에 dev-base 위치를 기록할지 물어본다.
 - 새 머신: 이 repo를 clone한 뒤 `./bootstrap.sh [name...]` (없는 repo만 clone, upstream remote 설정). 기존 clone이 있는 머신은 `MIGRATE.md` 절차를 따른다.
-- 설정 변경 반영: 각 머신에서 `UPDATE.md` (pull → build → 검증). 프로젝트 역할 파일 동기화는 `prompts/tmt-project-sync.md`.
+- 설정 변경 반영: 각 머신에서 `UPDATE.md` (pull → build → 검증). 프로젝트 역할 파일·router 동기화는 `prompts/tmt-project-sync.md`.
 - tmt-cli claude 워커용 설정 폴더(선택): `WORKER.md`.
 - handoff 수명 규약(claude-settings-example #5) 도입: 기존 프로젝트는 `prompts/handoff-cleanup.md`(일회성, Step 사이). repo 공개·public 운영은 `prompts/repo-go-public.md`.
 - 사용 피드백(선택, 소유자 동의 후): `prompts/feedback-report.md`. 리포트는 머신 로컬 `~/.config/dev-base-feedback/`에 쓰고, 원본(`.private.md`)은 public repo에 올리지 않는다.
