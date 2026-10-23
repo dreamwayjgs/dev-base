@@ -12,7 +12,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
 
 0. `~/.config/machine-context/local.md`가 있으면 먼저 읽고 실행 제약을 따른다.
 1. pull: `<dev-base>` 자신과, 그 아래 있는 repos.txt의 각 repo에서 `git pull --ff-only`. 워킹트리가 더럽거나 ff가 안 되면 그 repo에서 멈추고 보고. 이 머신에 없는 repo는 건너뛴다 (필요하면 `bootstrap.sh <name>`).
-   pull 전에 `<dev-base>`를 먼저 pull한 뒤, 각 repo의 `git config --get remote.origin.url`이 repos.txt URL과 같은지 확인하고 다르면 `git remote set-url origin <repos.txt URL>` (ssh는 repos.txt 주석의 `insteadOf`로. `git remote get-url`은 insteadOf가 적용된 값을 보여 주므로 비교에 쓰지 않는다). 옛 origin에만 있는 커밋이 있으면 멈추고 보고.
+   pull 전에 `<dev-base>`를 먼저 pull한 뒤, 각 repo의 `git config --get remote.origin.url`이 repos.txt URL과 같은 repo인지 확인한다. 비교는 `host/owner/repo`로 정규화해서 한다(`https://`·`git@host:`·끝의 `.git` 제거). ssh/https 차이만 있으면 그대로 둔다. 다른 repo면 `git remote set-url origin <repos.txt URL>` (https 머신은 repos.txt 주석의 `insteadOf`로. `git remote get-url`은 insteadOf가 적용된 값을 보여 주므로 비교에 쓰지 않는다). 옛 origin에만 있는 커밋이 있으면 멈추고 보고.
    `<dev-base>` pull로 이 파일(`UPDATE.md`)이 바뀌었으면 다시 읽고 새 내용대로 1단계부터 이어간다.
    Windows에서 거의 모든 파일이 modified로 나오면 줄바꿈(`core.autocrlf`) 문제다. reset하지 말고 `git diff --stat`·`git config core.autocrlf` 결과를 보고.
 2. caveman·ponytail (Claude Code가 있는 머신만, 빌드 전): `claude-settings-example/agent-skills.txt`의 caveman·ponytail 줄마다, 플러그인을 올리기 전에 upstream 최신 semver 태그(`git ls-remote --tags --refs https://github.com/<repo>`)를 매니페스트 ref(`v<버전>`)와 비교한다.
