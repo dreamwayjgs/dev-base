@@ -46,4 +46,5 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - 역할 세션 확인은 여기서 띄우지 않고 `NOT RUN`으로 적는다 (역할 세션은 별도 명시 승인 대상)
    지연 관찰 (완료를 막지 않음, `DEFERRED`로 적고 관찰 시점을 쓴다):
    - OpenCode V2 머신: "검증" 절의 (지연) 항목
+7. 검증 보고 후, 피드백 리포트를 만들지 나에게 묻는다. 원하면 `<dev-base>/prompts/feedback-report.md`대로 진행한다(이번 UPDATE 결과를 환경 항목에 쓴다). 원하지 않으면 끝낸다.
 ```
