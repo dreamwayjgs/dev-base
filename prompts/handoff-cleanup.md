@@ -23,10 +23,11 @@ handoff 수명 규약(claude-settings-example #5: handoff 추적, `handoff/evide
    - 현재 것이 아닌 handoff 디렉터리 전체 → 추적되면 삭제 제안(git에 남는다), 미추적 데이터가 섞였으면 그 부분은 `.scratch/`로
 7. BUILD-LOG의 Known Gaps 중 끝난 Step에서 넘어온 미해결 항목 → 이슈 초안 목록. 트래커가 gh/glab이면 이슈 제목·본문 초안, 없으면 `local-issues/NNN-slug.md` 초안. 이미 같은 이슈가 있으면 표시만 한다.
 8. SESSION-CHECKPOINT: ARCHITECT.md `## Checkpoint Maintenance` 기준으로 점검한다. 대체된 승인·일시정지·재개 지시, 서로 모순되는 상태가 있으면 정리안을 만든다(새 권한·예산을 만들지 않는다).
-9. `.gitignore`: `.scratch/`가 없으면 추가 대상. handoff가 ignore되고 있고 private이면 그 줄 제거 대상. manifest.md에 `visibility` 줄이 없으면 추가 대상.
+9. BUILD-LOG 로테이션(ARCHITECT.md `## Handoff Lifecycle`의 Step Index 규칙): 끝난 Step 기록 전체를 `## Step Index` 아래 한 줄(`- Steps ≤N (through YYYY-MM-DD) — entries: git show <정리 직전 커밋>:handoff/BUILD-LOG.md`)로 바꾸는 안을 보여준다. 진행 중인 Step이 있으면 그 기록은 남긴다. BUILD-LOG에 커밋 안 된 변경이 있으면 먼저 커밋할지 묻는다(색인이 가리킬 커밋에 원문이 다 있어야 한다). 이후 Step은 deploy gate에서 Step마다 한 줄씩 붙는다.
+10. `.gitignore`: `.scratch/`가 없으면 추가 대상. handoff가 ignore되고 있고 private이면 그 줄 제거 대상. manifest.md에 `visibility` 줄이 없으면 추가 대상.
 
 보고와 적용
-10. 분류 결과를 표로 보여준다: 경로, 분류, 조치, 추적 여부, 크기. 미추적 파일 삭제(복구 불가)는 따로 모아 보여준다. 내 승인을 받은 항목만 적용한다.
-11. 이슈는 내가 승인한 초안만 만든다(`gh issue create`/`glab issue create` 또는 `local-issues/` 파일).
-12. 적용 후 `git status`와 `git diff --stat`을 보여준다. 커밋 메시지 제안: `chore(handoff): adopt handoff lifecycle (evidence, issues, .scratch)`. 커밋·push는 내 승인 후.
+11. 분류 결과를 표로 보여준다: 경로, 분류, 조치, 추적 여부, 크기. 미추적 파일 삭제(복구 불가)는 따로 모아 보여준다. 내 승인을 받은 항목만 적용한다.
+12. 이슈는 내가 승인한 초안만 만든다(`gh issue create`/`glab issue create` 또는 `local-issues/` 파일).
+13. 적용 후 `git status`와 `git diff --stat`을 보여준다. 커밋 메시지 제안: `chore(handoff): adopt handoff lifecycle (evidence, issues, .scratch)`. 커밋·push는 내 승인 후.
 ```
