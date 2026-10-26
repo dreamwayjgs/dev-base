@@ -2,7 +2,7 @@
 
 handoff 수명 규약(claude-settings-example #5: handoff 추적, `handoff/evidence/<step>/`, 이슈 또는 `local-issues/`, `.scratch/`) 이전에 만들어진 프로젝트를 한 번 정리한다. 프로젝트가 있는 머신의 역할 없는 세션에서, Step 사이에 실행한다. 먼저 `prompts/tmt-project-sync.md`로 역할 파일을 #5가 반영된 템플릿에 맞춘다.
 
-쓰는 법: 세션에 "`<dev-base>/prompts/handoff-cleanup.md` 보고 진행해"라고 한다. 세션은 코드블록 안을 지시로, 밖을 실행 조건으로 읽는다.
+쓰는 법: 세션에 "`<dev-base>/prompts/handoff-cleanup.md` 보고 진행해"라고 한다. 이미 정리한 프로젝트에서 로테이션만 할 때는 "준비(1~4)와 9번만"이라고 덧붙인다. 세션은 코드블록 안을 지시로, 밖을 실행 조건으로 읽는다.
 
 ```
 이 프로젝트의 handoff를 수명 규약에 맞게 정리해줘. 지우거나 옮기기 전에 항상 목록을 보여주고 내 승인을 받는다. 커밋은 내가 diff를 본 뒤에 한다. 파일 내용은 분류에 필요한 만큼만 읽는다.
@@ -23,7 +23,10 @@ handoff 수명 규약(claude-settings-example #5: handoff 추적, `handoff/evide
    - 현재 것이 아닌 handoff 디렉터리 전체 → 추적되면 삭제 제안(git에 남는다), 미추적 데이터가 섞였으면 그 부분은 `.scratch/`로
 7. BUILD-LOG의 Known Gaps 중 끝난 Step에서 넘어온 미해결 항목 → 이슈 초안 목록. 트래커가 gh/glab이면 이슈 제목·본문 초안, 없으면 `local-issues/NNN-slug.md` 초안. 이미 같은 이슈가 있으면 표시만 한다.
 8. SESSION-CHECKPOINT: ARCHITECT.md `## Checkpoint Maintenance` 기준으로 점검한다. 대체된 승인·일시정지·재개 지시, 서로 모순되는 상태가 있으면 정리안을 만든다(새 권한·예산을 만들지 않는다).
-9. BUILD-LOG 로테이션(ARCHITECT.md `## Handoff Lifecycle`의 Step Index 규칙): 끝난 Step 기록 전체를 `## Step Index` 아래 한 줄(`- Steps ≤N (through YYYY-MM-DD) — entries: git show <정리 직전 커밋>:handoff/BUILD-LOG.md`)로 바꾸는 안을 보여준다. 진행 중인 Step이 있으면 그 기록은 남긴다. BUILD-LOG에 커밋 안 된 변경이 있으면 먼저 커밋할지 묻는다(색인이 가리킬 커밋에 원문이 다 있어야 한다). 이후 Step은 deploy gate에서 Step마다 한 줄씩 붙는다.
+9. BUILD-LOG 로테이션(ARCHITECT.md `## Handoff Lifecycle`의 Step Index 규칙). handoff 디렉터리가 여럿이면 각각 한다.
+   - 먼저 상시 참조 절을 찾는다: 체크포인트·PROJECT.md·역할 파일이 원문으로 가리키는 절, 상시 전제·규칙, 아키텍처 결정, 체크포인트가 근거로 인용하는 ID 장부(A번호 등). 규칙·전제는 `PROJECT.md`, 오래 유지할 결정은 `docs/decisions.md`로 옮기는 안을 만들고, 가리키던 쪽의 참조도 고친다. 인용 ID는 색인 줄의 커밋으로 찾을 수 있으니 옮기지 않는다.
+   - 기록 순서를 확인한다. 최신이 위로 쌓이는 로그면 현재 Step이 맨 위다.
+   - 끝난 Step 기록 전체를 `## Step Index` 아래 한 줄(`- Steps ≤N (through YYYY-MM-DD) — entries: git show <정리 직전 커밋>:handoff/BUILD-LOG.md`)로 바꾸는 안을 보여준다. 진행 중인 Step 기록은 남긴다. BUILD-LOG에 커밋 안 된 변경이 있으면 먼저 커밋할지 묻는다(색인이 가리킬 커밋에 원문이 다 있어야 한다). 이후 Step은 deploy gate에서 Step마다 한 줄씩 붙는다.
 10. `.gitignore`: `.scratch/`가 없으면 추가 대상. handoff가 ignore되고 있고 private이면 그 줄 제거 대상. manifest.md에 `visibility` 줄이 없으면 추가 대상.
 
 보고와 적용
