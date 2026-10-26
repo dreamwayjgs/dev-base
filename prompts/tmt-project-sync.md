@@ -1,51 +1,48 @@
-# 프로젝트 동기화 프롬프트 — 역할 파일을 포크 템플릿에 맞추기
+# 프로젝트 동기화 프롬프트 — 역할 파일·router를 템플릿 사본으로 덮어쓰기
 
 이미 three-man-team이 세팅된 프로젝트에서, 역할 없는 세션에 붙여 넣는다. 먼저 그 머신이 dev-base 배치여야 하고(`MIGRATE.md`), `UPDATE.md`로 최신이어야 한다.
 스텝 사이에 실행한다. 리뷰가 진행 중일 때는 하지 않는다.
 
+역할 파일과 router는 템플릿에서 생성한 사본이다(claude-settings-example #10). 동기화는 병합하지 않고 덮어쓴다. 템플릿과 다른 줄은 보존하지 않고 보고하며, 프로젝트 규칙은 `PROJECT.md`로 옮긴다.
+
 쓰는 법: 코드블록 안쪽을 붙여 넣거나, 세션에 "`<이 파일 경로>` 보고 진행해"라고 한다. 파일을 받은 세션은 코드블록 안을 지시로, 그 밖은 실행 조건으로 읽는다.
 
 ```
-이 프로젝트의 three-man-team 역할 파일에 개인 포크 템플릿의 변경을, router(`CLAUDE.md`·`AGENTS.md`)에 공통 템플릿 블록을 반영해줘. 덮어쓰지 말고 필요한 부분만 넣는다. 커밋은 내가 diff를 본 뒤에 한다.
+이 프로젝트의 three-man-team 역할 파일(ARCHITECT·BUILDER·REVIEWER·ROGER)과 router(`CLAUDE.md`·`AGENTS.md`)를 템플릿 사본으로 덮어써줘. 덮어쓰기 전에 템플릿과 다른 줄을 보고하고, 프로젝트 규칙은 `PROJECT.md`로 옮긴다. 삭제와 커밋은 내가 목록과 diff를 본 뒤에 한다.
 
 준비
 1. `~/.config/agent-rules/three-man-team/SOURCE`의 `clone=` 경로를 `<checkout>`으로 쓴다 (dev-base의 포크 git clone). origin이 `dreamwayjgs/three-man-team`인지 확인하고 `git -C <checkout> fetch origin` 후 (a) clone HEAD == `origin/main`, (b) `SOURCE`의 `commit=` == clone HEAD를 확인한다. pull은 하지 않는다 (clone 갱신은 `UPDATE.md` 몫).
    - `SOURCE`가 없거나 `clone=`이 dev-base 밖이면: 멈추고 "머신 전환 먼저(`MIGRATE.md`)".
    - HEAD가 `origin/main`보다 뒤거나 (b)가 다르면: 멈추고 "`UPDATE.md` 먼저".
-   - HEAD가 `origin/main`보다 앞서면(push 안 된 포크 커밋): 멈추고 "포크 push 먼저" (4단계 diff는 `origin/main` 기준).
+   - HEAD가 `origin/main`보다 앞서면(push 안 된 포크 커밋): 멈추고 "포크 push 먼저".
    - 멈출 때 clone 경로, HEAD, `origin/main`, ahead/behind 수, `SOURCE` commit을 함께 보고한다.
 2. 진행 중인 리뷰가 있는지 확인한다: handoff 디렉터리(세션 스코프면 `handoff-*`도)의 REVIEW-REQUEST가 `Ready for Review: YES`인데 REVIEW-FEEDBACK이 아직 없으면 멈추고 보고.
-3. 역할 파일 목록을 확정한다: 프로젝트 루트(또는 manifest.md)에서 ARCHITECT·BUILDER·REVIEWER·ROGER·OPERATOR에 해당하는 파일과 각 역할 이름(기본 Alice·Bob·Richard·Roger·Oz, 한국어 이름일 수 있다)을 찾는다. 파일이 여러 세트(v2/v3 등)면 세트별로 진행한다.
+3. 좌표를 확정한다: manifest.md(없으면 프로젝트 루트)에서 역할 파일, 각 역할 이름(기본 Alice·Bob·Richard·Roger, 한국어 이름일 수 있다), 프로젝트 이름, handoff 경로를 찾는다. 파일이 여러 세트(v2/v3 등)면 세트별로 진행한다.
 
-기준 diff
-4. 반영할 변경 = `git -C <checkout> diff <base> origin/main -- templates/`.
-   - `<base>`는 manifest.md의 `version`에 포크 커밋 해시가 있으면 그 값이다.
-   - 없으면 `837bc2f`다. 로저·karpathy·Tests 절은 옛 셋업 절차로 이미 들어가 있는 것으로 보고, 그 뒤의 변경만 반영한다.
-   - 단, 프로젝트 파일에 837bc2f 항목(로저 Role 절, karpathy 블록, 리뷰어 `## Tests` 절, deploy gate 0단계의 테스트 결과 확인)이 빠져 있으면 그것도 대상에 넣는다.
-5. 각 hunk를 프로젝트 파일에 의미 단위로 적용한다.
-   - 템플릿의 이름(Arch·Bob·Richard)은 그 프로젝트의 이름으로 바꾼다.
-   - 경로(`handoff/`)는 그 프로젝트의 handoff 경로로 바꾼다.
-   - 템플릿 문장은 영어 그대로 넣는다. 다음 동기화 때 diff가 맞아야 한다.
-   - 파일의 기존 인코딩(UTF-8)과 줄바꿈(CRLF/LF)을 유지한다. Windows에서는 pwsh 7을 쓰고, 가능하면 셸 치환 대신 편집 도구를 쓴다.
-   - 이미 같은 의미의 문장이 있으면 넣지 않고 "이미 있음"으로 보고한다.
-   - 프로젝트 고유 내용(환경 메모, 하위 repo 메모, 프로젝트 전용 규칙)은 지우거나 바꾸지 않는다.
-   - 템플릿 문구와 충돌하는 프로젝트 고유 문구가 있으면 고치지 말고 목록으로 보고한다.
-6. 파일별 주의:
-   - ROGER.md: 17dec33은 Role 절 교체다. 옛 "Read handoff/REVIEW-FEEDBACK.md before you begin"과 "Flag only what Richard missed" 문장은 남기지 말고 새 문장으로 바꾼다. 로저의 탐색 범위를 좁히는 문장이 남으면 안 된다.
-   - c78ae4e 반영 점검(2026-10-14): REVIEWER·ROGER의 Session Start에 `Read handoff/ARCHITECT-BRIEF.md`가 있는지 grep한다. 없으면 REVIEW-REQUEST 다음 단계로 넣고 뒤 번호를 민다. 같은 뜻의 단계가 이미 있으면 건너뛴다. `<!-- tmt-cli:start -->`~`<!-- tmt-cli:end -->` 블록은 `tmt init` 소유라 고치지 않는다.
-   - bbe78fc 반영 점검(2026-10-15, Roger Dissent 처리 경로): ARCHITECT의 "Briefing Richard" 절은 "Briefing Reviewers" 절(로저 투입, 재리뷰 규칙, `## Arch Ruling`)로 교체하고 Deploy Gate 트리거·보고 문장을 바꾼다. BUILDER의 대기 문장과 "Handling Richard's Feedback" 절을 "Handling Review Feedback"으로 교체한다. REVIEWER의 마지막 신호 문장, ROGER의 Additions 형식(Must Fix·Should Fix 분리)·Dissent·Ready·신호 문장을 바꾼다. 옛 "signal Arch: \"Step N is clear.\""와 "When Richard signals" 문장이 남으면 안 된다.
-   - 41deda5 반영 점검(2026-10-16, 역할 호출 방식): ARCHITECT의 Bob·Richard/Roger 모델 지정 문장을 "switch to that model before pasting, or set it in the external CLI orchestrator"로 바꾼다. new-setup.md가 프로젝트에 남아 있으면 "one Claude Code session" 안내와 Agent tool `model` 문장도 템플릿 문장으로 바꾼다. 역할 파일에서 `Agent tool`·`subagent`·`spin up`·`run_in_background`를 grep해 Agent tool로 역할을 띄우라는 문장이 남으면 안 된다. 단 `<!-- tmt-cli:start -->`~`<!-- tmt-cli:end -->` 블록은 고치지 않는다. "Spin up" 프롬프트 제목은 1ce21c7 점검에서 바꾼다.
-   - 1ce21c7 반영 점검(2026-10-16, 전역 지침 정합): 역할 파일 Session Start의 `Load token-optimizer skill` 문장을 템플릿의 "Load skills per the <역할> row of the role token-optimization table in the global rules. Skip any that are absent."로 바꾼다. ARCHITECT의 "Spin up Bob/Roger"·"spin up Richard" 문장과 붙여넣기 프롬프트 안의 "Load token-optimizer skill first."를 템플릿 문장으로 바꾼다. 프로젝트 `CLAUDE.md`·`AGENTS.md`에 `@.claude/skills/token-optimization.md` import가 있으면 그 줄을 지운다(파일 삭제는 제안만). ARCHITECT의 "named after the Reno Arch/Reno <이름>" 문장은 템플릿 문장("You are a landmark that people orient around.")으로 바꾼다.
-   - dc4dd12 반영 점검(2026-10-16, 테스트·컨텍스트 비용): BUILDER의 Tests 항목·Test results 문장·완료 4단계, ARCHITECT의 brief 테스트 정책 문장·Continued sessions·Ruling의 final full suite 지시·라운드 상태 줄·Deploy Gate 0단계(test fingerprint)·7단계 새 세션 권고·Anti-Drift diff 위생을 넣는다. fingerprint 명령의 `handoff` 경로는 그 프로젝트의 handoff 경로로 바꾼다. 프로젝트 고유 테스트 정책(예: 특정 test 명령 지정)이 있으면 지우지 말고 충돌 목록으로 보고한다.
-   - OPERATOR.md: 환경 좌표가 채워진 프로젝트 파일이다. 템플릿으로 덮지 않는다. 템플릿 변경 중 규칙에 해당하는 것만 제안 목록으로 보고하고 적용하지 않는다.
-   - ARCHITECT.md 버전 체크: 포크는 비활성화했다. 프로젝트에 upstream 버전 체크 단계가 있으면 같은 한 줄("disabled in this fork. Skip.")로 바꾼다.
-   - 프로젝트에 `_temp/ARCHITECT.md`가 있으면 삭제를 제안만 한다.
-   - qmd 잔재 점검: 프로젝트 `CLAUDE.md`·`AGENTS.md`·역할 파일에서 `qmd`를 grep한다. 옛 전역 규칙("qmd search 우선", `qmd status` 신선도 확인)이 복사돼 있으면 그 문장만 지운다(2026-10-13 전역 규칙에서 폐기). 프로젝트가 자체 용도로 qmd를 쓰는 문장이면 지우지 말고 보고한다.
-   - caveman 레벨 표기 점검(2026-10-13, caveman v3): 역할 파일·프로젝트 지침에서 `caveman (lite|full|ultra)`·`/caveman lite|full|ultra` 같은 강도 표기를 grep한다. 역할별 로드 지시면 `caveman`(스킬 하나)으로 바꾸고, 전역 표를 복사해 둔 옛 Token Optimization 절이면 그 절을 지운다(전역 표가 우선).
-   - 스킬 경로 점검: 프로젝트 지침·역할 파일에서 `SKILL.md`·`skills/` 경로를 grep한다. 실존하지 않거나 harness 전용 경로(`~/.claude/skills/<name>`, `~/.claude/plugins/cache/...` 등)면 `~/.agents/skills/<name>/SKILL.md`로 바꾼다. 그 경로에도 없는 스킬이면 바꾸지 말고 보고한다.
-7. router: `~/.config/agent-rules/project-rules.md`의 `<!-- tmt-rules:start -->`~`<!-- tmt-rules:end -->` 블록으로 프로젝트 `CLAUDE.md`·`AGENTS.md`의 같은 블록을 통째로 교체한다. 이 블록은 포크가 아니라 claude-settings-example 템플릿이라 4단계 diff에 나오지 않는다. 마커 밖과 `<!-- tmt-cli:start -->`~`<!-- tmt-cli:end -->` 블록은 건드리지 않는다. 마커가 없으면 템플릿 유래 절을 찾아 마커로 감싼 뒤 교체하고, 판단이 애매한 절은 목록으로 보고한다. 교체 후 두 파일이 같은지 확인한다.
-8. manifest.md: 이번 반영 기준인 포크 커밋 해시(`git -C <checkout> rev-parse --short origin/main`)를 `version`에 기록한다. 없으면 포크 `templates/project-folder/new-setup.md`의 manifest 형식으로 만든다. 이 값이 다음 동기화의 `<base>`다.
+기대본 만들기
+4. 역할 파일 기대본 = `git -C <checkout> show origin/main:templates/project-folder/<파일>`에 다음 치환만 한 것.
+   - 이름: 단어 `Arch`·`Bob`·`Richard`를 그 프로젝트의 이름으로 (대소문자 구분, 워드바운더리. `Architect` 등 역할명은 보존).
+   - 제목의 `[Your Project Name]`을 프로젝트 이름으로.
+   - handoff 경로: `handoff/`와 fingerprint 명령의 `':(exclude)handoff'`를 그 프로젝트의 handoff 경로로 (기본값이면 그대로).
+   - 기존 파일의 인코딩(UTF-8)과 줄바꿈(CRLF/LF)을 따른다. Windows에서는 pwsh 7을 쓴다.
+5. router 기대본 = `~/.config/agent-rules/project-rules.md` 그대로. `CLAUDE.md`·`AGENTS.md` 둘 다 같다.
+6. `<!-- tmt-cli:start -->`~`<!-- tmt-cli:end -->` 블록은 `tmt init` 소유다. 비교에서 빼고, 덮어쓴 뒤 8단계에서 다시 넣는다.
+
+차이 보고 (아직 쓰지 않는다)
+7. 파일별로 기존 파일과 기대본의 diff를 뽑고, 다른 줄을 하나씩 분류해 목록으로 보여준다.
+   - (a) 템플릿 구버전·옛 동기화 잔재: 덮어쓰면 해결. 옮기지 않는다.
+   - (b) 프로젝트 규칙(스택, 환경 메모, 하위 repo 메모, 프로젝트 전용 정책, 옵티마이저 지정 등): `PROJECT.md`로 옮길 문안을 같이 보여준다. `PROJECT.md`에 이미 같은 뜻이 있으면 "이미 있음".
+   - (c) 판단이 애매한 것: 질문으로 남긴다.
+   - 옛 qmd 규칙, caveman 강도 표기(`lite|full|ultra`), harness 전용 스킬 경로는 (a)로 본다.
+   그다음 내 승인을 기다린다.
+
+적용 (승인 후)
+8. (b)를 `PROJECT.md`에 쓴다(없으면 만든다. 비어도 된다). 역할 파일과 router를 기대본으로 덮어쓴다. 프로젝트에 tmt-cli 블록이 있었거나 `tmt.json`이 있으면 `tmt init --apply`로 블록을 다시 넣는다. 끝나면 `CLAUDE.md`와 `AGENTS.md`가 같은지, 역할 파일과 기대본의 차이가 tmt-cli 블록뿐인지 확인한다.
+9. manifest.md: 이번 기준 포크 커밋(`git -C <checkout> rev-parse --short origin/main`)을 `version`에 기록하고 `context_file: PROJECT.md`로 맞춘다. manifest가 없으면 포크 `templates/project-folder/new-setup.md`의 형식으로 만든다.
+10. 덮어쓰지 않는 것:
+   - OPERATOR.md와 프로젝트 전용 역할 파일(예: TRANSLATOR.md): 환경 좌표가 채워진 프로젝트 파일이다. 포크 `templates/optional/OPERATOR.md` 변경 중 규칙에 해당하는 것만 제안 목록으로 보고하고 적용하지 않는다.
+   - 프로젝트에 남은 `new-setup.md`, `_temp/ARCHITECT.md`, `@.claude/skills/token-optimization.md` 같은 옛 import 대상 파일: 삭제를 제안만 한다.
 
 보고
-9. 파일별로 정리한다: 적용한 hunk, router 블록 교체 여부, 이미 있어서 건너뛴 것, 충돌로 보류한 것, OPERATOR 제안. 그다음 `git diff`를 보여준다. 커밋은 내 승인 후에 한다.
+11. 파일별로 정리한다: 덮어쓴 파일, `PROJECT.md`로 옮긴 줄, 버린 줄(a), 남은 질문(c), OPERATOR 제안, tmt init 결과. 그다음 `git diff`를 보여준다. 커밋은 내 승인 후에 한다.
 ```
