@@ -34,6 +34,7 @@
    - (b) 프로젝트 규칙(스택, 환경 메모, 하위 repo 메모, 프로젝트 전용 정책, 옵티마이저 지정 등): `PROJECT.md`로 옮길 문안을 같이 보여준다. `PROJECT.md`에 이미 같은 뜻이 있으면 "이미 있음".
    - (c) 판단이 애매한 것: 질문으로 남긴다.
    - 옛 qmd 규칙, caveman 강도 표기(`lite|full|ultra`), harness 전용 스킬 경로는 (a)로 본다.
+   - handoff 수명 규약(ARCHITECT.md `## Handoff Lifecycle`)과 충돌하는 문장은 (b)로 옮기지 않는다. handoff 파일 사본 보존(`*.archive.md`·`archive/`·`.bak`·"덮어쓰기 전 보존"), BUILD-LOG를 append-only로 두거나 줄이지 말라는 지시, private repo에서 handoff를 git에서 빼라는 지시는 (a). handoff 밖 산출물(`ops/` 등)의 보존 규칙은 (b) 그대로. public repo의 handoff 제외는 손대지 않고 "`prompts/repo-go-public.md` 대상"으로 보고한다.
    그다음 내 승인을 기다린다.
 
 적용 (승인 후)
