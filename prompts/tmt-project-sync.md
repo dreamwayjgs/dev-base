@@ -14,9 +14,9 @@
 1. `~/.config/agent-rules/three-man-team/SOURCE`의 `clone=` 경로를 `<checkout>`으로 쓴다 (dev-base의 포크 git clone). origin이 `dreamwayjgs/three-man-team`인지 확인하고 `git -C <checkout> fetch origin` 후 (a) clone HEAD == `origin/main`, (b) `SOURCE`의 `commit=` == clone HEAD를 확인한다. pull은 하지 않는다 (clone 갱신은 `UPDATE.md` 몫).
    - `SOURCE`가 없거나 `clone=`이 dev-base 밖이면: 멈추고 "머신 전환 먼저(`MIGRATE.md`)".
    - HEAD가 `origin/main`보다 뒤거나 (b)가 다르면: 멈추고 "`UPDATE.md` 먼저".
-   - HEAD가 `origin/main`보다 앞서면(push 안 된 포크 커밋): 멈추고 "포크 push 먼저".
+   - HEAD가 `origin/main`보다 앞서면(push 안 된 포크 커밋): 멈추고 "포크 push 먼저". 같은 세션에서 방금 템플릿을 고친 경우라 내가 명시 승인하면 clone HEAD 기준으로 진행하되, manifest `version`에 HEAD를 적고 push가 남았음을 보고에 남긴다.
    - 멈출 때 clone 경로, HEAD, `origin/main`, ahead/behind 수, `SOURCE` commit을 함께 보고한다.
-2. 진행 중인 리뷰가 있는지 확인한다: handoff 디렉터리(세션 스코프면 `handoff-*`도)의 REVIEW-REQUEST가 `Ready for Review: YES`인데 REVIEW-FEEDBACK이 아직 없으면 멈추고 보고.
+2. 진행 중인 리뷰가 있는지 확인한다: handoff 디렉터리(세션 스코프면 `handoff-*`도)의 REVIEW-REQUEST가 `Ready for Review: YES`인데 REVIEW-FEEDBACK이 아직 없으면 멈추고 보고. 역할 파일·router에 하다 만 미커밋 변경(이전 부분 동기화)이 있으면 덮어쓰기로 대체되니 보존하지 않고 목록만 보고한다.
 3. 좌표를 확정한다: manifest.md(없으면 프로젝트 루트)에서 역할 파일, 각 역할 이름(기본 Alice·Bob·Richard·Roger, 한국어 이름일 수 있다), 프로젝트 이름, handoff 경로를 찾는다. 파일이 여러 세트(v2/v3 등)면 세트별로 진행한다.
 
 기대본 만들기
@@ -33,19 +33,20 @@
 7. 파일별로 기존 파일과 기대본의 diff를 뽑고, 다른 줄을 하나씩 분류해 목록으로 보여준다.
    - (a) 템플릿 구버전·옛 동기화 잔재: 덮어쓰면 해결. 옮기지 않는다.
    - (b) 프로젝트 규칙(스택, 환경 메모, 하위 repo 메모, 프로젝트 전용 정책, 옵티마이저 지정 등): `PROJECT.md`로 옮길 문안을 같이 보여준다. `PROJECT.md`에 이미 같은 뜻이 있으면 "이미 있음".
-   - (c) 판단이 애매한 것: 질문으로 남긴다.
+   - (c) 판단이 애매한 것: 질문으로 남긴다. router 맨 위의 `@<file>` import는 모든 세션에 실리므로, 한 세션만 쓰는 문서면 import 대신 "그 세션만 읽는다" 참조로 바꿀지 (c)로 묻는다.
    - 옛 qmd 규칙, caveman 강도 표기(`lite|full|ultra`), harness 전용 스킬 경로는 (a)로 본다.
+   - `OPERATOR.md`를 이번에 처음 넣는데 `ops/`가 이미 있으면, OPERATOR.md Outputs 표(INDEX·jobs·tmp·runbooks·FAQ)와 겹치는 기존 파일·폴더를 목록으로 보여주고 매핑(무엇이 무슨 역할을 대신하는지)을 `PROJECT.md`에 적을 문안을 만든다.
    - 기존 `OPERATOR.md`에 환경 좌표 절이나 프로젝트 전용 소절이 남아 있으면 (b)다: 좌표는 `ops/ENV.md`(없으면 포크 `templates/optional/ops/ENV.md` 형식으로 생성)로, 규칙은 `PROJECT.md`로 옮길 문안을 보여준다.
    - handoff 수명 규약(ARCHITECT.md `## Handoff Lifecycle`)과 충돌하는 문장은 (b)로 옮기지 않는다. handoff 파일 사본 보존(`*.archive.md`·`archive/`·`.bak`·"덮어쓰기 전 보존"), BUILD-LOG를 append-only로 두거나 줄이지 말라는 지시, private repo에서 handoff를 git에서 빼라는 지시는 (a). handoff 밖 산출물(`ops/` 등)의 보존 규칙은 (b) 그대로. public repo의 handoff 제외는 손대지 않고 "`prompts/repo-go-public.md` 대상"으로 보고한다.
    그다음 내 승인을 기다린다.
 
 적용 (승인 후)
-8. (b)를 `PROJECT.md`에 쓴다(없으면 만든다. 비어도 된다). 역할 파일과 router를 기대본으로 덮어쓴다. 프로젝트에 tmt-cli 블록이 있었거나 `tmt.json`이 있으면 `tmt init --apply`로 블록을 다시 넣는다. 끝나면 `CLAUDE.md`와 `AGENTS.md`가 같은지, 역할 파일과 기대본의 차이가 tmt-cli 블록뿐인지 확인한다.
-9. manifest.md: 이번 기준 포크 커밋(`git -C <checkout> rev-parse --short origin/main`)을 `version`에 기록하고 `context_file: PROJECT.md`로 맞춘다. manifest가 없으면 포크 `templates/project-folder/new-setup.md`의 형식으로 만든다.
+8. (b)를 `PROJECT.md`에 쓴다(없으면 만든다. 비어도 된다). 역할 파일과 router를 기대본으로 덮어쓴다. 스테이징은 동기화가 만들거나 바꾼 파일만 한다. `git add -A`를 쓰지 않고, 관련 없는 미추적 파일은 보고만 한다. 프로젝트에 tmt-cli 블록이 있었거나 `tmt.json`이 있으면 `tmt init --apply`로 블록을 다시 넣는다. 끝나면 `CLAUDE.md`와 `AGENTS.md`가 같은지, 역할 파일과 기대본의 차이가 tmt-cli 블록뿐인지 확인한다.
+9. manifest.md: 이번 기준 포크 커밋(`git -C <checkout> rev-parse --short origin/main`)을 `version`에, 오늘 날짜를 `synced`에 기록하고 `context_file: PROJECT.md`로 맞춘다. `operator`·`visibility` 줄이 비어 있으면 채운다. manifest가 없으면 포크 `templates/project-folder/new-setup.md`의 형식으로 만든다.
 10. 덮어쓰지 않는 것:
    - `ops/ENV.md`: 오즈가 실측으로 채우는 프로젝트 파일이다. 절대 덮어쓰지 않는다.
    - 프로젝트 전용 역할 파일(예: TRANSLATOR.md): 포크에 템플릿이 없으므로 덮어쓰지 않는다.
-   - 프로젝트에 남은 `new-setup.md`, `_temp/ARCHITECT.md`, `@.claude/skills/token-optimization.md` 같은 옛 import 대상 파일: 삭제를 제안만 한다.
+   - 프로젝트에 남은 `new-setup.md`, `VERSION`, `_temp/ARCHITECT.md`, `@.claude/skills/token-optimization.md` 같은 템플릿 잔재·옛 import 대상 파일: 삭제를 제안만 한다. 루트의 재개 메모·조사 메모·트래커 미러는 `prompts/handoff-cleanup.md` 12단계 몫이다.
 
 보고
 11. 파일별로 정리한다: 덮어쓴 파일, `PROJECT.md`로 옮긴 줄, 버린 줄(a), 남은 질문(c), `ops/ENV.md`로 옮긴 좌표, tmt init 결과. 그다음 `git diff`를 보여준다. 커밋은 내 승인 후에 한다.

@@ -1,6 +1,6 @@
 # handoff 정리 — 기존 프로젝트를 handoff 수명 규약에 맞추기 (일회성)
 
-handoff 수명 규약(claude-settings-example #5: handoff 추적, `handoff/evidence/<step>/`, 이슈 또는 `local-issues/`, `.scratch/`) 이전에 만들어진 프로젝트를 한 번 정리한다. 프로젝트가 있는 머신의 역할 없는 세션에서, Step 사이에 실행한다. 먼저 `prompts/tmt-project-sync.md`로 역할 파일을 #5가 반영된 템플릿에 맞춘다.
+handoff 수명 규약(claude-settings-example #5: handoff 추적, `handoff/evidence/<step>/`, 이슈 또는 `local-issues/`, `.scratch/`) 이전에 만들어진 프로젝트를 한 번 정리한다. handoff 밖에 쌓인 루트 메모(재개 메모·조사 메모·트래커 미러·템플릿 잔재)도 같이 분류한다(12번). 프로젝트가 있는 머신의 역할 없는 세션에서, Step 사이에 실행한다. 먼저 `prompts/tmt-project-sync.md`로 역할 파일을 #5가 반영된 템플릿에 맞춘다.
 
 쓰는 법: 세션에 "`<dev-base>/prompts/handoff-cleanup.md` 보고 진행해"라고 한다. 이미 정리한 프로젝트에서 로테이션만 할 때는 "준비(1~5)와 10번만"이라고 덧붙인다. 세션은 코드블록 안을 지시로, 밖을 실행 조건으로 읽는다.
 
@@ -29,9 +29,15 @@ handoff 수명 규약(claude-settings-example #5: handoff 추적, `handoff/evide
    - 기록 순서를 확인한다. 최신이 위로 쌓이는 로그면 현재 Step이 맨 위다.
    - 끝난 Step 기록 전체를 `## Step Index` 아래 한 줄(`- Steps ≤N (through YYYY-MM-DD) — entries: git show <정리 직전 커밋>:handoff/BUILD-LOG.md`)로 바꾸는 안을 보여준다. 진행 중인 Step 기록은 남긴다. BUILD-LOG에 커밋 안 된 변경이 있으면 먼저 커밋할지 묻는다(색인이 가리킬 커밋에 원문이 다 있어야 한다). 이후 Step은 deploy gate에서 Step마다 한 줄씩 붙는다.
 11. `.gitignore`: `.scratch/`가 없으면 추가 대상. handoff가 ignore되고 있고 private이면 그 줄 제거 대상. manifest.md에 `visibility` 줄이 없으면 추가 대상.
+12. 루트의 낡은 메모(handoff 밖). 분류만 하고 조치는 승인 후.
+   - 재개·상태 메모(`START.md`, `RESUME.md`, 날짜가 이름인 `YYYYMMDD.md` 등): SESSION-CHECKPOINT가 같은 내용을 담으면 삭제 제안(추적 파일이면 git에 남는다). 체크포인트에 없는 결정·지시가 있으면 그 줄을 체크포인트나 `PROJECT.md`로 옮길 문안을 만든다.
+   - 조사·분석 메모: 오즈가 있으면 `ops/investigation-<date>-<topic>.md`로 이동 제안(INDEX 등록은 오즈 몫), 없으면 `docs/`.
+   - 외부 트래커의 수동 미러(`docs/TICKETS.md` 같은 것): 트래커가 정본이면 삭제 제안. 미러에만 있는 항목(커밋 해시·판단 메모)은 먼저 목록으로 보여준다.
+   - 템플릿 잔재(`new-setup.md`, `VERSION`, `_temp/`, 옛 import 대상 스킬 파일): 삭제 제안. `prompts/tmt-project-sync.md` 10단계와 같은 항목이다.
+   - 미추적 파일은 `git mv`가 실패한다. `mv` 후 `git add`로 옮긴다.
 
 보고와 적용
-12. 분류 결과를 표로 보여준다: 경로, 분류, 조치, 추적 여부, 크기. 미추적 파일 삭제(복구 불가)는 따로 모아 보여준다. 내 승인을 받은 항목만 적용한다.
-13. 이슈는 내가 승인한 초안만 만든다(`gh issue create`/`glab issue create` 또는 `local-issues/` 파일).
-14. 적용 후 `git status`와 `git diff --stat`을 보여준다. 커밋 메시지 제안: `chore(handoff): adopt handoff lifecycle (evidence, issues, .scratch)`. 커밋·push는 내 승인 후.
+13. 분류 결과를 표로 보여준다: 경로, 분류, 조치, 추적 여부, 크기. 미추적 파일 삭제(복구 불가)는 따로 모아 보여준다. 내 승인을 받은 항목만 적용한다.
+14. 이슈는 내가 승인한 초안만 만든다(`gh issue create`/`glab issue create` 또는 `local-issues/` 파일).
+15. 적용은 이 정리가 만들거나 바꾼 파일만 스테이징한다. `git add -A`를 쓰지 않는다. 관련 없는 미추적 파일은 목록으로 보고만 한다. 그다음 `git status`와 `git diff --stat`을 보여준다. 커밋 메시지 제안: `chore(handoff): adopt handoff lifecycle (evidence, issues, .scratch)`. 커밋·push는 내 승인 후.
 ```
