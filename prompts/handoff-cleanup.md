@@ -1,6 +1,6 @@
 # handoff 정리 — 기존 프로젝트를 handoff 수명 규약에 맞추기 (일회성)
 
-handoff 수명 규약(claude-settings-example #5: handoff 추적, `handoff/evidence/<step>/`, 이슈 또는 `local-issues/`, `.scratch/`) 이전에 만들어진 프로젝트를 한 번 정리한다. handoff 밖에 쌓인 루트 메모(재개 메모·조사 메모·트래커 미러·템플릿 잔재)도 같이 분류한다(12번). 프로젝트가 있는 머신의 역할 없는 세션에서, Step 사이에 실행한다. 먼저 `prompts/tmt-project-sync.md`로 역할 파일을 #5가 반영된 템플릿에 맞춘다.
+handoff 수명 규약(agent-rules #5: handoff 추적, `handoff/evidence/<step>/`, 이슈 또는 `local-issues/`, `.scratch/`) 이전에 만들어진 프로젝트를 한 번 정리한다. handoff 밖에 쌓인 루트 메모(재개 메모·조사 메모·트래커 미러·템플릿 잔재)도 같이 분류한다(12번). 프로젝트가 있는 머신의 역할 없는 세션에서, Step 사이에 실행한다. 먼저 `prompts/tmt-project-sync.md`로 역할 파일을 #5가 반영된 템플릿에 맞춘다.
 
 쓰는 법: 세션에 "`<dev-base>/prompts/handoff-cleanup.md` 보고 진행해"라고 한다. 이미 정리한 프로젝트에서 로테이션만 할 때는 "준비(1~5)와 10번만"이라고 덧붙인다. 세션은 코드블록 안을 지시로, 밖을 실행 조건으로 읽는다.
 

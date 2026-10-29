@@ -37,7 +37,7 @@ public 파생본 (내가 요청할 때만)
     - 회사·고객 repo 이름 → 별칭(`work-a`, `work-b`). 어느 repo가 회사 것인지 모르면 나에게 묻는다
     - 홈 아래 절대경로 → `~/…`, 프로젝트 내부 경로는 회사 repo면 디렉터리 한 단계까지만
     - 인용 → 회사 repo 인용은 삭제하고 요지만, 개인 repo 인용은 유지
-    원본과의 diff를 보여주고 승인받는다. public 위치(dev-base·claude-settings-example 이슈 등)에는 `.public.md`만 올린다.
+    원본과의 diff를 보여주고 승인받는다. public 위치(dev-base·agent-rules 이슈 등)에는 `.public.md`만 올린다.
 
 전송은 하지 않는다. 파일 경로만 보고하고 끝낸다.
 ```
@@ -54,5 +54,5 @@ public 파생본 (내가 요청할 때만)
 ## 전송·처리 (소유자)
 
 - 전송: 수동. 다른 머신의 리포트는 처리할 머신의 `~/.config/dev-base-feedback/`로 옮긴다(scp, 클라우드 드라이브, 복사 붙여넣기 무엇이든). `.private.md`는 private 경로로만 옮긴다.
-- 처리: dev-base 역할 없는 세션에서 "`~/.config/dev-base-feedback/`의 미처리 리포트(`## 처리`가 빈 것)를 분류해줘"라고 한다. 항목을 SETUP.md의 의존 방향대로 나눈다: 규칙·템플릿 문구 → claude-settings-example 이슈, 역할 템플릿 → 포크(claude-settings-example 경유), CLI 계약 → tmt-cli, 머신 절차 → dev-base. 반영·보류·기각과 링크를 각 리포트 `## 처리`에 적는다.
+- 처리: dev-base 역할 없는 세션에서 "`~/.config/dev-base-feedback/`의 미처리 리포트(`## 처리`가 빈 것)를 분류해줘"라고 한다. 항목을 SETUP.md의 의존 방향대로 나눈다: 규칙·템플릿 문구 → agent-rules 이슈, 역할 템플릿 → 포크(agent-rules 경유), CLI 계약 → tmt-cli, 머신 절차 → dev-base. 반영·보류·기각과 링크를 각 리포트 `## 처리`에 적는다.
 - 정리 규약(누적물 보존·삭제 기준)은 리포트가 여러 머신에서 쌓인 뒤 `## 누적물`을 근거로 정한다.

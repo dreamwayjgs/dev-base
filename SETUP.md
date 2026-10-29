@@ -6,20 +6,20 @@
 - 새 머신: 이 repo를 clone한 뒤 `./bootstrap.sh [name...]` (없는 repo만 clone, upstream remote 설정). 기존 clone이 있는 머신은 `MIGRATE.md` 절차를 따른다.
 - 설정 변경 반영: 각 머신에서 `UPDATE.md` (pull → build → 검증). 프로젝트 역할 파일·router 동기화는 `prompts/tmt-project-sync.md`.
 - tmt-cli claude 워커용 설정 폴더(선택): `WORKER.md`.
-- handoff 수명 규약(claude-settings-example #5) 도입: 기존 프로젝트는 `prompts/handoff-cleanup.md`(일회성, Step 사이). tmt 레이아웃(코드 repo + umbrella repo)·마이그레이션·공개 전환은 `prompts/tmt-umbrella.md`.
+- handoff 수명 규약(agent-rules #5) 도입: 기존 프로젝트는 `prompts/handoff-cleanup.md`(일회성, Step 사이). tmt 레이아웃(코드 repo + umbrella repo)·마이그레이션·공개 전환은 `prompts/tmt-umbrella.md`.
 - 사용 피드백(선택, 소유자 동의 후): `prompts/feedback-report.md`. 리포트는 머신 로컬 `~/.config/dev-base-feedback/`에 쓰고, 원본(`.private.md`)은 public repo에 올리지 않는다.
-- 머신·repo에 걸친 절차는 이 repo에 둔다. claude-settings-example에는 규칙 내용과 build 도구만 둔다.
+- 머신·repo에 걸친 절차는 이 repo에 둔다. agent-rules에는 규칙 내용과 build 도구만 둔다.
 - 공통 템플릿 배포 경로는 harness 무관 `~/.config/agent-rules/`다. dev-base 밖에서 build하면 아무것도 쓰지 않고 멈춘다.
 - repo 추가: `repos.txt`와 `.gitignore`에 함께 넣는다. 상위에서 하위 폴더를 `git add`하지 않는다.
 
 | 경로 | remote | 역할 |
 |---|---|---|
-| `claude-settings-example/` | GitHub `dreamwayjgs/claude-settings-example` (public; 2026-10-21 GitLab에서 이전, 옛 이슈 #1~#11은 GitLab에 남음) | 전역 규칙·템플릿 source-of-truth. `build-claude-md.sh`(Windows는 `build-rules.ps1`, 소유자 실행)가 harness별 전역 규칙 파일과 `~/.config/agent-rules/`(템플릿)로 **복사** 배포. 포크 관리 주체 |
-| `three-man-team/` | GitHub `dreamwayjgs/three-man-team` (public 포크, `upstream` = 원본) | 역할 템플릿. 이 clone이 정본. claude-settings-example build가 `templates/`를 `~/.config/agent-rules/three-man-team/`로 복사(+ `SOURCE`에 clone 경로·커밋)하고, 전역 규칙은 그 복사본을 읽는다. 포크 push 규칙은 claude-settings-example `CLAUDE.md`를 따른다 |
+| `agent-rules/` | GitHub `dreamwayjgs/agent-rules` (public; 2026-10-21 GitLab에서 이전, 옛 이슈 #1~#11은 GitLab에 남음; 2026-10-29 `claude-settings-example`에서 이름 변경, 옛 URL은 redirect) | 전역 규칙·템플릿 source-of-truth. `build-claude-md.sh`(Windows는 `build-rules.ps1`, 소유자 실행)가 harness별 전역 규칙 파일과 `~/.config/agent-rules/`(템플릿)로 **복사** 배포. 포크 관리 주체 |
+| `three-man-team/` | GitHub `dreamwayjgs/three-man-team` (public 포크, `upstream` = 원본) | 역할 템플릿. 이 clone이 정본. agent-rules build가 `templates/`를 `~/.config/agent-rules/three-man-team/`로 복사(+ `SOURCE`에 clone 경로·커밋)하고, 전역 규칙은 그 복사본을 읽는다. 포크 push 규칙은 agent-rules `CLAUDE.md`를 따른다 |
 | `tmt-cli/` | GitHub `dreamwayjgs/tmt-cli` | 역할 세션 오케스트레이터 CLI. 전역 `tmt`는 `npm link`로 이 폴더를 가리킨다. `tmt init` 마커 블록·CLI 계약만 소유 |
 
-의존 방향: 역할 파일 문구 변경 → claude-settings-example(이슈) → 포크 템플릿. tmt-cli는 역할 파일·포크를 직접 고치지 않는다.
+의존 방향: 역할 파일 문구 변경 → agent-rules(이슈) → 포크 템플릿. tmt-cli는 역할 파일·포크를 직접 고치지 않는다.
 
-- 배포본(`~/.claude/CLAUDE.md` 등)을 직접 고치지 말고 claude-settings-example에서 고친 뒤 build한다.
+- 배포본(`~/.claude/CLAUDE.md` 등)을 직접 고치지 말고 agent-rules에서 고친 뒤 build한다.
 - tmt-cli를 옮기거나 재설치하면 `tmt-cli/`에서 `npm install && npm run build` 후 `npm link`를 다시 한다 (`dist/`는 추적하지 않는다).
-- foreman: claude-settings-example·tmt-cli 모두 제외. 이 폴더에서도 실행하지 않는다.
+- foreman: agent-rules·tmt-cli 모두 제외. 이 폴더에서도 실행하지 않는다.

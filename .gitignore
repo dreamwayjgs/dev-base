@@ -1,6 +1,6 @@
 # Child repos are independent clones (see repos.txt). Never add them here:
 # adding a nested repo creates a broken gitlink.
-/claude-settings-example/
+/agent-rules/
 /three-man-team/
 /tmt-cli/
 /local-issues/

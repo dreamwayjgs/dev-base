@@ -13,13 +13,13 @@ Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다.
 0. `~/.config/machine-context/local.md`가 있으면 먼저 읽고 실행 제약을 따른다.
 1. 존재 확인: `~/.claude-worker`가 있으면 2단계를 건너뛰고 3단계 점검만 한다. 없으면 이 머신에서 tmt-cli claude 워커를 쓸지 나에게 확인한 뒤 2단계로 간다.
 2. 생성:
-   - `~/.claude-worker`를 만들고 `<dev-base>/claude-settings-example/settings.json.example`을 `~/.claude-worker/settings.json`으로 복사한 뒤 3단계 settings 규칙대로 고친다.
+   - `~/.claude-worker`를 만들고 `<dev-base>/agent-rules/settings.json.example`을 `~/.claude-worker/settings.json`으로 복사한 뒤 3단계 settings 규칙대로 고친다.
    - 플러그인 캐시는 복사하지 않는다. 워커는 스킬을 `~/.agents/skills/<name>/SKILL.md` 파일로 읽는다.
    - 로그인은 내가 한다: `wclaude login`(4단계 함수)을 실행하라고 안내한다. `.credentials.json`을 복사하지 않는다 (refresh token 공유).
 3. 점검 (어긋나면 고치기 전에 목록으로 보고):
    - settings.json: `statusLine` 없음, `enabledPlugins`가 `{}`, `extraKnownMarketplaces` 없음(플러그인을 안 쓰는데 마켓플레이스 캐시만 받아온다), `model`·`tui` 없음. permissions·hooks·autoMode·effortLevel 등 나머지는 `~/.claude/settings.json`과 같고(`theme` 같은 UI 설정은 달라도 된다), hooks 경로는 `~/.claude/hooks/`를 그대로 가리킨다.
    - `~/.claude-worker/CLAUDE.md` 없음. `$HOME` 아래 레포에서는 `~/.claude/CLAUDE.md`가 조상 Project 파일로 로드되므로(haiku `-p` 실측) 두면 중복만 된다. 이름을 바꿔 둔 파일(예: `CLAUDE.md.off`)은 그대로 둔다.
-   - claude-settings-example build를 이 폴더에 돌리지 않는다 (`--claude-dir .claude-worker` 금지, 위 CLAUDE.md 규칙 때문).
+   - agent-rules build를 이 폴더에 돌리지 않는다 (`--claude-dir .claude-worker` 금지, 위 CLAUDE.md 규칙 때문).
 4. 셸 함수 `wclaude`가 없으면 추가한다. bash는 `~/.bash_aliases`:
      wclaude() { CLAUDE_CONFIG_DIR="$HOME/.claude-worker" command claude "$@"; }
    Windows pwsh는 `$PROFILE` (원래 값 복원):
@@ -34,4 +34,4 @@ Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다.
 ```
 
 - `$HOME` 밖 레포(`/mnt/c/...` 등)에서는 `~/.claude/CLAUDE.md`가 로드되지 않으니 워커를 쓰지 않는다.
-- 앨리스의 호출 규칙(`~/.claude-worker`가 있으면 호출 단위로 `CLAUDE_CONFIG_DIR`을 붙인다)은 전역 규칙 `claude-settings-example/fragments/10-three-man-team.md`에 있다.
+- 앨리스의 호출 규칙(`~/.claude-worker`가 있으면 호출 단위로 `CLAUDE_CONFIG_DIR`을 붙인다)은 전역 규칙 `agent-rules/fragments/10-three-man-team.md`에 있다.

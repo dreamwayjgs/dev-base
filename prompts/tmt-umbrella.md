@@ -128,5 +128,6 @@ context_file: PROJECT.md
 
 ## 후속 (이 문서 밖)
 
-- 전역 "three-man-team 세팅해줘" 절차와 `new-setup.md`는 프로젝트 루트 = 코드 repo 루트를 전제한다. 역할 파일의 test fingerprint "repo root" 문구도 코드 repo 루트로 명확히 할 필요가 있다. claude-settings-example 이슈 → 포크 템플릿 경로로 처리한다.
+- 전역 규칙(agent-rules): "three-man-team 세팅해줘" 절차 앞에 umbrella 루트에서 실행한다는 한 줄과 이 문서 링크, 역할 파일의 test fingerprint "repo root"가 코드 repo 루트라는 문구를 넣는다. 포크 템플릿에는 umbrella 뼈대 파일을 두지 않는다(PROJECT.md·`.gitignore`는 프로젝트 소유이고, 템플릿 소유 파일을 늘리면 sync 범위가 넓어진다).
+- `new-setup.md`(포크 템플릿): manifest.md에 `layout`·`umbrella`·`repo` 필드를 쓰라는 한 줄만.
 - 상류 변경 자동 감지는 tmt-cli 후보 기능이다. 지금은 위 수동 절차다.

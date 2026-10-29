@@ -14,10 +14,11 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
 
 0. 머신 실행 맥락: 공통 경로는 `~/.config/machine-context/local.md`다 (모든 harness 공유, repo 위치 무관).
    - 파일이 있으면 먼저 읽고 실행 제약을 따른다. 기존 내용은 보존한다.
-   - 옛 claude-settings-example clone의 `machine-context/local.md`도 있으면 확인한다. 공통 경로가 없으면 부모 디렉터리를 만들고 복사한다. 양쪽이 다르면 덮어쓰지 말고 물어본다. 원본 삭제는 별도 승인을 받는다.
+   - 옛 agent-rules clone의 `machine-context/local.md`도 있으면 확인한다. 공통 경로가 없으면 부모 디렉터리를 만들고 복사한다. 양쪽이 다르면 덮어쓰지 말고 물어본다. 원본 삭제는 별도 승인을 받는다.
    - 양쪽 모두 없으면 필요한 머신 제약을 물어보고, 동의한 내용만 공통 경로에 작성한다. 불필요하면 만들지 않는다. 다른 머신의 수치·경로를 복사하거나 비밀값을 기록하지 않는다.
 1. dev-base 위치: 이 파일이 있는 현재 폴더가 dev-base다. 정해진 기본 경로는 없으니 옮기자고 하지 않는다. `~/.config/machine-context/local.md`에 dev-base 위치를 기록할지 물어보고, 동의하면 한 줄 추가한다 (파일이 없으면 0단계 규칙대로 만든다). 이후 `<dev-base>`라고 쓴다.
-2. 기존 clone 찾기: repos.txt의 각 name에 대해 이 머신의 기존 clone을 찾는다 (예: `~/claude-settings-example`, `~/development/**/tmt-cli`, `~/deploy/<name>`). origin URL이 repos.txt와 같은 repo인지(ssh/https 차이는 무시) 확인한다.
+2. 기존 clone 찾기: repos.txt의 각 name에 대해 이 머신의 기존 clone을 찾는다 (예: `~/claude-settings-example`(옛 이름), `~/development/**/tmt-cli`, `~/deploy/<name>`). origin URL이 repos.txt와 같은 repo인지(ssh/https 차이는 무시) 확인한다.
+   - 옛 이름 `claude-settings-example`로 clone된 repo(2026-10-29 `agent-rules`로 변경, 옛 URL은 redirect)는 `git remote set-url origin git@github.com:dreamwayjgs/agent-rules.git` 하고, 3단계에서 `<dev-base>/agent-rules`로 옮긴다.
    - three-man-team의 옛 checkout `~/.claude*/skills/three-man-team`은 옮기지 않는다 (6단계에서 정리).
    - 이 머신에 필요 없는 repo(예: tmt-cli를 안 쓰는 머신)는 건너뛴다. 모르면 물어본다.
 3. 옮기기: 기존 clone마다 `git status`가 깨끗하고 미push 커밋(`git log @{u}..`)과 stash가 없을 때만 `<dev-base>/<name>`으로 `mv`한다. git이 추적하지 않는 로컬 파일(`.claude-settings.local`, `tmt.json`, `.tmt/` 등)은 mv로 그대로 따라온다. 더럽거나 미push가 있으면 멈추고 보고. 옛 경로에 호환 symlink는 만들지 않는다.
