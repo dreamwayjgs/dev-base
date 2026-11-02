@@ -24,7 +24,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
 3. 옮기기: 기존 clone마다 `git status`가 깨끗하고 미push 커밋(`git log @{u}..`)과 stash가 없을 때만 `<dev-base>/<name>`으로 `mv`한다. git이 추적하지 않는 로컬 파일(`.claude-settings.local`, `tmt.json`, `.tmt/` 등)은 mv로 그대로 따라온다. 더럽거나 미push가 있으면 멈추고 보고. 옛 경로에 호환 symlink는 만들지 않는다.
    옮긴 뒤 여파 처리:
    - Claude Code가 있으면: `~/.claude*/projects/` 아래 옛 경로 slug 폴더(절대경로의 영숫자 아닌 문자를 모두 `-`로 바꾼 이름. `/`뿐 아니라 `_`·`.`, Windows의 `:`·`\`도 바뀐다 — 예: `C:\Users\me\local_dev` → `C--Users-me-local-dev`)를 새 경로 slug로 rename한다. 계산하지 말고 `projects/` 목록에서 repo 이름으로 찾아 확인한다 (세션 기록·프로젝트 메모리 유지). 새 slug 폴더가 이미 있으면 멈추고 보고.
-   - tmt-cli를 옮겼고 전역 `tmt`가 있으면: `<dev-base>/tmt-cli`에서 `npm install && npm run build` 후 `npm link`, `tmt --help` 확인. `dist/`는 추적하지 않아 빌드 전에는 link해도 `tmt`가 생기지 않는다.
+   - tmt-cli를 옮겼고 전역 `tmt`가 있으면: `<dev-base>/tmt-cli-tmt/tmt-cli`에서 `npm install && npm run build` 후 `npm link`, `tmt --help` 확인. (2026-11-02부터 tmt-cli는 umbrella `tmt-cli-tmt/` 안의 clone이다. 옛 `<dev-base>/tmt-cli` checkout은 지운다.) `dist/`는 추적하지 않아 빌드 전에는 link해도 `tmt`가 생기지 않는다.
    - 옛 경로 문자열을 설정 파일에서 찾는다: `~/.config`, `~/.claude*/settings*.json`, `~/.omp/agent`, 셸 rc 파일, crontab. 백업·히스토리·로그·세션 DB는 제외. 찾은 곳은 목록으로 보여주고 승인 후 고친다. 원격 명령 안의 경로(ssh로 다른 머신에서 실행되는 부분)는 그 머신 경로라 고치지 않는다.
    - repo 안 문서에 옛 절대경로가 있으면 과거 기록은 고치지 말고 보고만 한다.
 4. 빠진 repo 받기: `<dev-base>/bootstrap.sh [name...]`. repos.txt는 ssh가 기본이다. 이 머신에 GitHub ssh 키가 없으면 repos.txt 머리 주석의 https `insteadOf` 설정을 먼저 한다(빠뜨리면 clone이 인증 오류로 실패한다). tmt-cli는 private이라 https면 `gh auth login`·`gh auth setup-git`이 필요하다. 인증이 없으면 tmt-cli는 건너뛰고 보고.
@@ -43,7 +43,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - `~/.config/agent-rules/three-man-team/SOURCE`의 `clone=`이 `<dev-base>/three-man-team`
    - `~/.claude*/skills/three-man-team` 없음
    - 3단계에서 찾은 설정 파일에 옛 경로 없음
-   - 전역 `tmt`가 있으면 `<dev-base>/tmt-cli`를 가리킴
+   - 전역 `tmt`가 있으면 `<dev-base>/tmt-cli-tmt/tmt-cli`를 가리킴
    - 5a 옛 템플릿 경로에 `project-rules.md` 없음, `~/.agents/skills/qmd` 없음, 생성된 전역 규칙 파일과 `~/.claude/settings.json`에 `qmd` 문자열 없음(`"qmd@qmd": false`는 허용)
    - `omp plugin list`에 매니페스트 스킬과 겹치는 플러그인이 없고 `omp skill list`에 `name collision` 없음
    - Claude 머신: `~/.agents/skills/caveman/SKILL.md`에 lite/full 강도 표가 없음, `settings.json`들에 caveman activation·mode-tracker 훅 등록이 없음

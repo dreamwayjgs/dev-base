@@ -31,7 +31,7 @@ Windows에서 `git diff`가 내용 없이 `old mode 100755`/`new mode 100644`만
    - 빌드는 Claude 설정 폴더 중 `~/.claude`에만 CLAUDE.md를 쓴다. 다른 계정 폴더(예: `~/.claude-personal`·`~/.claude-admin`)가 있으면 쓰는 폴더인지 나에게 물은 뒤, 폴더마다 `./build-claude-md.sh --targets claude --claude-dir <폴더명>`(Windows `-Targets claude -ClaudeDir <폴더명>`)으로 한 번 더 빌드한다. `~/.claude-worker`는 대상이 아니다 (`WORKER.md`).
 4. OpenCode V2가 있는 머신(`opencode --version`이 2.x)만: caveman은 `agent-rules/opencode-v2-migration.md` 절차 4(upstream 파일 복사, 설치기 금지, `~/.config/opencode/AGENTS.md`에 `<!-- caveman-begin -->` 블록이 있으면 지우지 말고 보고), ponytail은 `agent-rules/opencode-plugins/ponytail-v2/README.md` 설치 절차로 어댑터와 의존 파일을 맞추고, `opencode-v2-migration.md`의 "검증" 절 항목을 표시(즉시·행동·지연)대로 6단계 분류에 넣는다.
    V2인데 `~/.config/opencode/plugins/`나 `~/.config/opencode/opencode.json`이 없으면 첫 설치다: `opencode-v2-migration.md` 절차 4~6(caveman·ponytail·config)을 따르고(1~3단계 V1 백업·V2 설치는 건너뜀), `opencode serve --service`가 떠 있으면 재시작한다.
-5. tmt-cli가 있고 전역 `tmt`가 이 clone을 가리키면: `<dev-base>/tmt-cli`에서 `npm run build` 후 `tmt --help`.
+5. tmt-cli가 있고 전역 `tmt`가 이 clone을 가리키면: `<dev-base>/tmt-cli-tmt/tmt-cli`에서 `npm run build` 후 `tmt --help`.
 6. 검증 (표로 보고). 각 항목 상태는 `PASS`·`FAIL`·`NOT RUN`·`DEFERRED`·`EXCEPTION`(내가 승인한 예외) 중 하나로 적는다. 빌드가 성공했다는 이유로 돌리지 않은 항목을 PASS로 적지 않는다.
    즉시 게이트 (모델 호출 없음, 전부 PASS여야 완료):
    - 각 repo `git status -sb`가 `main...origin/main`, ahead/behind 없음. `git -C <dev-base> status --short`가 비어 있음

@@ -6,4 +6,5 @@
 # An origin in the other protocol is fine as long as it is the same host/owner/repo.
 agent-rules  git@github.com:dreamwayjgs/agent-rules.git
 three-man-team           git@github.com:dreamwayjgs/three-man-team.git  https://github.com/russelleNVy/three-man-team.git
-tmt-cli                  git@github.com:dreamwayjgs/tmt-cli.git
+tmt-cli-tmt              git@github.com:dreamwayjgs/tmt-cli-tmt.git
+tmt-cli-tmt/tmt-cli      git@github.com:dreamwayjgs/tmt-cli.git

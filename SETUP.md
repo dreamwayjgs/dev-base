@@ -16,10 +16,11 @@
 |---|---|---|
 | `agent-rules/` | GitHub `dreamwayjgs/agent-rules` (public; 2026-10-21 GitLab에서 이전, 옛 이슈 #1~#11은 GitLab에 남음; 2026-10-29 `claude-settings-example`에서 이름 변경, 옛 URL은 redirect) | 전역 규칙·템플릿 source-of-truth. `build-claude-md.sh`(Windows는 `build-rules.ps1`, 소유자 실행)가 harness별 전역 규칙 파일과 `~/.config/agent-rules/`(템플릿)로 **복사** 배포. 포크 관리 주체 |
 | `three-man-team/` | GitHub `dreamwayjgs/three-man-team` (public 포크, `upstream` = 원본) | 역할 템플릿. 이 clone이 정본. agent-rules build가 `templates/`를 `~/.config/agent-rules/three-man-team/`로 복사(+ `SOURCE`에 clone 경로·커밋)하고, 전역 규칙은 그 복사본을 읽는다. 포크 push 규칙은 agent-rules `CLAUDE.md`를 따른다 |
-| `tmt-cli/` | GitHub `dreamwayjgs/tmt-cli` | 역할 세션 오케스트레이터 CLI. 전역 `tmt`는 `npm link`로 이 폴더를 가리킨다. `tmt init` 마커 블록·CLI 계약만 소유 |
+| `tmt-cli-tmt/` | GitHub `dreamwayjgs/tmt-cli-tmt` (private) | tmt-cli의 tmt umbrella(2026-11-02 전환, `prompts/tmt-umbrella.md`): 역할 파일·handoff·PROJECT.md·`issues/`. 역할 세션은 여기서 연다 |
+| `tmt-cli-tmt/tmt-cli/` | GitHub `dreamwayjgs/tmt-cli` | 역할 세션 오케스트레이터 CLI(코드 repo, umbrella 안의 독립 clone). 전역 `tmt`는 `npm link`로 이 폴더를 가리킨다. `tmt init` 마커 블록·CLI 계약만 소유 |
 
 의존 방향: 역할 파일 문구 변경 → agent-rules(이슈) → 포크 템플릿. tmt-cli는 역할 파일·포크를 직접 고치지 않는다.
 
 - 배포본(`~/.claude/CLAUDE.md` 등)을 직접 고치지 말고 agent-rules에서 고친 뒤 build한다.
-- tmt-cli를 옮기거나 재설치하면 `tmt-cli/`에서 `npm install && npm run build` 후 `npm link`를 다시 한다 (`dist/`는 추적하지 않는다).
+- tmt-cli를 옮기거나 재설치하면 `tmt-cli-tmt/tmt-cli/`에서 `npm install && npm run build` 후 `npm link`를 다시 한다 (`dist/`는 추적하지 않는다). `bootstrap.sh`는 repos.txt 순서대로 umbrella 다음에 그 안의 코드 repo를 clone한다.
 - foreman: agent-rules·tmt-cli 모두 제외. 이 폴더에서도 실행하지 않는다.
