@@ -30,6 +30,7 @@ abc-tmt/                 umbrella repo (private). 세션은 항상 여기서 연
 - **커밋 주체**: 밥 = 코드 repo 스텝 브랜치. 앨리스 = deploy gate에서 코드 repo `abc` `main` 머지와 umbrella 커밋(handoff·PROJECT.md). umbrella 커밋 메시지에 코드 repo 커밋 해시를 적는다. 문서·handoff에서 `main`은 항상 어느 repo인지 붙여 쓴다(`abc` `main` / umbrella `main`).
 - **이슈**: 내부 작업 이슈(Known Gaps 등)는 umbrella repo 이슈 또는 `local-issues/`. 코드 repo 트래커에는 외부에 보여도 되는 이슈만 둔다.
 - **manifest.md**: `visibility`는 코드 repo 것. `repo:`에 코드 repo remote·subdir·branch, umbrella 자신의 remote를 적는다(예: `repo: git@host:org/abc.git (subdir abc/, branch main); umbrella: git@host:org/abc-tmt.git`). `handoff_dir`은 디렉터리 또는 스코프별 매핑.
+- **헤드리스**: `tmt headless`(이슈 트래커 기반 자동 루프)는 umbrella 레이아웃에서만 쓴다. 단일 root(`loop.repo: "."`)에서는 켜지 않는다(tmt-cli#92). 켜는 절차는 `prompts/tmt-headless-setup.md`.
 - **새 머신**: `git clone <umbrella>` 후, umbrella clone 안의 manifest.md `repo:`가 적은 subdir(`abc/`)에 코드 repo를 clone한다.
 - **상류 변경 감지**: 코드 repo에 tmt 밖에서 커밋이 들어올 수 있다(다른 기여자의 PR 머지, 소유자의 직접 커밋). 로컬 clone은 fetch 전까지 모른다. 앨리스는 세션 시작과 brief 작성 전에 fetch하고 SESSION-CHECKPOINT에 적힌 코드 repo `abc` `main`의 마지막 해시와 대조한다. 새 커밋이 있으면 밥의 스텝 브랜치 rebase 여부와 brief 재스코프를 판단해 체크포인트에 적는다.
 
