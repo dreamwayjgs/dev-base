@@ -2,6 +2,5 @@
 # adding a nested repo creates a broken gitlink.
 /agent-rules/
 /three-man-team/
-/tmt-cli/
 /tmt-cli-tmt/
 /local-issues/
