@@ -21,6 +21,7 @@
    - `headless`: `{"tracker": {"kind": "gh", "project": "<owner>/<repo>"}, "owner": "<GitHub 로그인>", "trigger": "label", "notify": {"slack": {"webhookEnv": "TMT_SLACK_WEBHOOK"}}}`. 첫 적용은 `trigger: "label"`(소유자가 `tmt:investigate`나 `tmt:hotfix`를 단 이슈만 대상)로 한다. 열린 이슈 전부를 대상으로 하는 `"all"`은 내가 말할 때만.
    - `loop.repo`는 `repos[0]`이 코드 repo 폴더면 생략하고, 아니면 `"loop": {"repo": "<폴더>"}`. `loop.base`는 기본 `main`.
    - 기존 역할 설정은 건드리지 않는다. 수정 전후를 보여주고 승인받는다.
+   - 라벨: 헤드리스는 라벨을 만들지 않는다. tracker project에 없으면 소유자가 이슈에서 고를 수 없다. `gh label list -R <owner>/<repo> | grep tmt:`로 확인하고, 없는 것만 승인 후 `gh label create <이름> --color <색> --description "<설명>" -R <owner>/<repo>`로 만든다: `tmt:investigate`(FBCA04), `tmt:hotfix`(D93F0B), `tmt:skip`(BFD4F2), `tmt:loop-1`(1D76DB), `tmt:loop-2`(5319E7), `tmt:plan-approved`(0E8A16), `tmt:plan-rejected`(B60205). `headless.labels`로 이름을 바꿨으면 그 이름으로.
 3. 블록: `tmt init`으로 블록 diff를 보여주고, 승인 후 `tmt init --apply`. 바뀐 역할 파일·router만 umbrella에 커밋한다(push는 내가 지시할 때).
 4. 시험 실행:
    - 중첩 확인 (Alice가 안에서 `tmt`를 부를 수 있는지, 턴 2개): `tmt probe --role alice --prompt "Run exactly: echo \$TMT_LOCK_PID; tmt probe --role <싼 워커 역할> --prompt 'Reply OK only'. Report both outputs verbatim. Change no files."`. 안쪽 probe의 JSON(`"text":"OK"`)이 나오면 통과. `.tmt/.lock` 에러면 Alice transport가 api다 — 2단계로 돌아가 `standalone`을 확인한다. 끝난 뒤 `git status`가 깨끗하고 `.tmt/.lock`이 없어야 한다.
