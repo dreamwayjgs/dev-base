@@ -2,7 +2,7 @@
 
 handoff 수명 규약(agent-rules #5: handoff 추적, `handoff/evidence/<step>/`, 이슈 또는 `local-issues/`, `.scratch/`) 이전에 만들어진 프로젝트를 한 번 정리한다. handoff 밖에 쌓인 루트 메모(재개 메모·조사 메모·트래커 미러·템플릿 잔재)도 같이 분류한다(12번). 프로젝트가 있는 머신의 역할 없는 세션에서, Step 사이에 실행한다. 먼저 `prompts/tmt-project-sync.md`로 역할 파일을 #5가 반영된 템플릿에 맞춘다.
 
-쓰는 법: 세션에 "`<dev-base>/prompts/handoff-cleanup.md` 보고 진행해"라고 한다. 이미 정리한 프로젝트에서 로테이션만 할 때는 "준비(1~5)와 10번만"이라고 덧붙인다. 세션은 코드블록 안을 지시로, 밖을 실행 조건으로 읽는다.
+쓰는 법: 세션에 "`<dev-base>/prompts/handoff-cleanup.md` 보고 진행해"라고 한다. 이미 정리한 프로젝트에서 로테이션만 할 때는 "준비(1~5)와 10번만"이라고 덧붙인다. `.scratch` 의존 점검만 할 때는(agent-rules #18, 2026-10-23에 #5를 적용한 프로젝트는 2026-11-22 전에) "준비(1~2)와 13번만"이라고 덧붙인다. 세션은 코드블록 안을 지시로, 밖을 실행 조건으로 읽는다.
 
 ```
 이 프로젝트의 handoff를 수명 규약에 맞게 정리해줘. 지우거나 옮기기 전에 항상 목록을 보여주고 내 승인을 받는다. 커밋은 내가 diff를 본 뒤에 한다. 파일 내용은 분류에 필요한 만큼만 읽는다.
@@ -36,8 +36,10 @@ handoff 수명 규약(agent-rules #5: handoff 추적, `handoff/evidence/<step>/`
    - 템플릿 잔재(`new-setup.md`, `VERSION`, `_temp/`, 옛 import 대상 스킬 파일): 삭제 제안. `prompts/tmt-project-sync.md` 10단계와 같은 항목이다.
    - 미추적 파일은 `git mv`가 실패한다. `mv` 후 `git add`로 옮긴다.
 
+13. `.scratch` 의존(agent-rules #18: `.scratch`는 30일 뒤 지워도 되고, 추적 파일은 그것에 기대지 않는다). `git grep -n '\.scratch/'`로 추적 파일의 언급을 찾는다. 역할 파일·router·PROJECT.md 규칙 문장, `.gitignore`, 경로를 예로 든 문장, 스텝마다 덮어쓰는 handoff 상태 파일의 로그 경로는 건너뛴다. `.scratch` 안 파일을 근거로 삼는 곳(evidence, 조사 보고 `issues/<n>/`, Known Gaps, 결정 기록)만 목록으로 만든다. 각 항목마다 가리키는 파일이 남아 있는지, 크기가 얼마인지 적는다. 그리고 결론·핵심 수치·재현 방법을 그 문서나 `<handoff_dir>/evidence/<step>/`에 작은 텍스트로 옮기는 문안을 만든다. 원본 데이터는 옮기지 않는다. 비밀값·로그 원문이 섞였으면 요약만 한다. 이미 사라진 파일은 "근거 소실"로 표시한다.
+
 보고와 적용
-13. 분류 결과를 표로 보여준다: 경로, 분류, 조치, 추적 여부, 크기. 미추적 파일 삭제(복구 불가)는 따로 모아 보여준다. 내 승인을 받은 항목만 적용한다.
-14. 이슈는 내가 승인한 초안만 만든다(`gh issue create`/`glab issue create` 또는 `local-issues/` 파일).
-15. 적용은 이 정리가 만들거나 바꾼 파일만 스테이징한다. `git add -A`를 쓰지 않는다. 관련 없는 미추적 파일은 목록으로 보고만 한다. 그다음 `git status`와 `git diff --stat`을 보여준다. 커밋 메시지 제안: `chore(handoff): adopt handoff lifecycle (evidence, issues, .scratch)`. 커밋·push는 내 승인 후.
+14. 분류 결과를 표로 보여준다: 경로, 분류, 조치, 추적 여부, 크기. 미추적 파일 삭제(복구 불가)는 따로 모아 보여준다. 내 승인을 받은 항목만 적용한다.
+15. 이슈는 내가 승인한 초안만 만든다(`gh issue create`/`glab issue create` 또는 `local-issues/` 파일).
+16. 적용은 이 정리가 만들거나 바꾼 파일만 스테이징한다. `git add -A`를 쓰지 않는다. 관련 없는 미추적 파일은 목록으로 보고만 한다. 그다음 `git status`와 `git diff --stat`을 보여준다. 커밋 메시지 제안: `chore(handoff): adopt handoff lifecycle (evidence, issues, .scratch)`. 커밋·push는 내 승인 후.
 ```
