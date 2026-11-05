@@ -3,7 +3,7 @@
 이미 umbrella로 운영 중인 프로젝트(`prompts/tmt-umbrella.md`)에서, 역할 없는 세션을 umbrella 루트에서 열고 붙여 넣는다. 먼저 그 머신이 dev-base 배치여야 하고(`MIGRATE.md`), `UPDATE.md`로 최신이어야 한다(전역 `tmt --version`이 tmt-cli `main` 커밋).
 스텝 사이에 실행한다. 리뷰·빌드 턴이 돌고 있을 때는 하지 않는다.
 
-헤드리스는 이슈 트래커(GitHub `gh` 전체, GitLab `glab`은 gitlab.com의 조사·댓글·플랜까지 — MR과 루프는 tmt-cli #94 Step 65 머지 뒤. 그 전에는 glab 이슈에 `tmt:loop-1`·`tmt:loop-2`·`tmt:hotfix`를 달지 않는다)를 보고 cron이 2분마다 `tmt headless --once`를 돌려, 조사 → 소유자 라벨 → 1형 루프 → PR을 자동으로 진행한다. 설계와 계약은 tmt-cli `README.md` `## Headless`와 `docs/headless.md`. 소유자 명령: 라벨 `tmt:loop-1`·`tmt:loop-2`·`tmt:hotfix`·`tmt:skip`·`tmt:investigate`, 댓글 `tmt:approve`·`tmt:reject`·`tmt:update`·`tmt:cleanup`(첫 줄에 그대로; 옛 `/…`는 명령이 아니다).
+헤드리스는 이슈 트래커(GitHub `gh`, GitLab `glab`은 gitlab.com만. 전역 `tmt`가 tmt-cli `5e5eb5d` 이상이어야 glab MR·루프가 된다)를 보고 cron이 2분마다 `tmt headless --once`를 돌려, 조사 → 소유자 라벨 → 1형 루프 → PR을 자동으로 진행한다. 설계와 계약은 tmt-cli `README.md` `## Headless`와 `docs/headless.md`. 소유자 명령: 라벨 `tmt:loop-1`·`tmt:loop-2`·`tmt:hotfix`·`tmt:skip`·`tmt:investigate`, 댓글 `tmt:approve`·`tmt:reject`·`tmt:update`·`tmt:cleanup`(첫 줄에 그대로; 옛 `/…`는 명령이 아니다).
 
 쓰는 법: 코드블록 안쪽을 붙여 넣거나, 세션에 "`<이 파일 경로>` 보고 진행해"라고 한다. 파일을 받은 세션은 코드블록 안을 지시로, 그 밖은 실행 조건으로 읽는다.
 
