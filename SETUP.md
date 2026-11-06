@@ -24,4 +24,3 @@
 
 - 배포본(`~/.claude/CLAUDE.md` 등)을 직접 고치지 말고 agent-rules에서 고친 뒤 build한다.
 - tmt-cli를 새로 설치하거나 갱신하면 `tmt-cli-tmt/tmt-cli/`의 `main`에서 `npm install && npm run install-global`을 한다 (`dist/`는 추적하지 않는다. 브랜치·dirty 트리에서는 거부된다). 노드 버전을 바꾸면 다시 설치한다. 기존 `npm link` 머신은 먼저 `npm rm -g tmt-cli`. `bootstrap.sh`는 repos.txt 순서대로 umbrella 다음에 그 안의 코드 repo를 clone한다.
-- foreman: agent-rules·tmt-cli 모두 제외. 이 폴더에서도 실행하지 않는다.
