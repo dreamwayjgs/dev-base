@@ -28,6 +28,6 @@
 4. 시험 실행:
    - 중첩 확인 (Alice가 안에서 `tmt`를 부를 수 있는지, 턴 2개): `tmt probe --role alice --prompt "Run exactly: echo \$TMT_LOCK_PID; tmt probe --role <싼 워커 역할> --prompt 'Reply OK only'. Report both outputs verbatim. Change no files."`. 안쪽 probe의 JSON(`"text":"OK"`)이 나오면 통과. `.tmt/.lock` 에러면 멈추고 출력을 보고한다. 끝난 뒤 `git status`가 깨끗하고 `.tmt/.lock`이 없어야 한다.
    - `mkdir -p .scratch`, `tmt headless pause --reason "setup"`, `tmt headless status`(paused, running 빈 목록) 확인, `tmt headless resume`, `tmt headless --once` 1회. `trigger: "label"`이고 라벨 단 이슈가 없으면 `{"picked":null}`이 정상이다. 출력과 `tmt headless top`을 보고한다.
-5. 스케줄러: crontab은 내가 직접 넣는다. 넣을 줄만 만들어 보여준다: `*/2 * * * * cd <umbrella 절대경로> && PATH=<node bin>:<harness bin>:/usr/local/bin:/usr/bin:/bin [CLAUDE_CONFIG_DIR=<워커 폴더>] [TMT_SLACK_WEBHOOK=<url>, notify를 넣었을 때만] tmt headless --once >> .scratch/cron.log 2>&1`. 경로는 이 머신에서 `which node`·`which <harness>`로 확인한 값이다. webhook URL은 비밀값이라 문서·커밋에 적지 않는다.
+5. 스케줄러: crontab은 내가 직접 넣는다. 넣을 줄만 만들어 보여준다: `*/2 * * * * cd <umbrella 절대경로> && PATH=<node bin>:<harness bin>:/usr/local/bin:/usr/bin:/bin [CLAUDE_CONFIG_DIR=<워커 폴더> CLAUDE_CODE_OAUTH_TOKEN=$(cat <워커 폴더>/oauth-token), claude 어댑터일 때. 토큰 파일은 `WORKER.md` 2단계] [TMT_SLACK_WEBHOOK=<url>, notify를 넣었을 때만] tmt headless --once >> .scratch/cron.log 2>&1`. 경로는 이 머신에서 `which node`·`which <harness>`로 확인한 값이다. webhook URL은 비밀값이라 문서·커밋에 적지 않는다.
 6. 끝 보고: 적용한 설정 요약, 커밋 해시, 첫 사용법(이슈에 `tmt:investigate` → 조사 댓글 확인 → `tmt:loop-1` → PR), 상태 확인 명령(`tmt headless status`, `tmt headless top`, `.scratch/cron.log`), 멈추기(`tmt headless pause`).
 ```

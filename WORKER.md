@@ -16,6 +16,7 @@ Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다.
    - `~/.claude-worker`를 만들고 `<dev-base>/agent-rules/settings.json.example`을 `~/.claude-worker/settings.json`으로 복사한 뒤 3단계 settings 규칙대로 고친다.
    - 플러그인 캐시는 복사하지 않는다. 워커는 스킬을 `~/.agents/skills/<name>/SKILL.md` 파일로 읽는다.
    - 로그인은 내가 한다: `wclaude login`(4단계 함수)을 실행하라고 안내한다. `.credentials.json`을 복사하지 않는다 (refresh token 공유).
+   - cron(`tmt headless`)에 쓸 거면 장기 토큰도 내가 만든다: `wclaude setup-token`을 실행해 출력된 토큰을 `~/.claude-worker/oauth-token`에 저장하고 `chmod 600` 하라고 안내한다. 토큰 값은 세션에 붙여넣지 않고 문서·커밋에 적지 않는다. 이유: 로그인 세션은 한 달쯤 지나면 다시 로그인해야 하는데, 대화형 세션은 미리 알려 주지만 헤드리스는 알림 없이 이유 모를 실패로 죽는다. 장기 토큰은 약 1년 유효하고, 만료되면 같은 절차로 다시 만든다.
 3. 점검 (어긋나면 고치기 전에 목록으로 보고):
    - settings.json: `statusLine` 없음, `enabledPlugins`가 `{}`, `extraKnownMarketplaces` 없음(플러그인을 안 쓰는데 마켓플레이스 캐시만 받아온다), `model`·`tui` 없음. permissions·hooks·autoMode·effortLevel 등 나머지는 `~/.claude/settings.json`과 같고(`theme` 같은 UI 설정은 달라도 된다), hooks 경로는 `~/.claude/hooks/`를 그대로 가리킨다.
    - `~/.claude-worker/CLAUDE.md` 없음. `$HOME` 아래 레포에서는 `~/.claude/CLAUDE.md`가 조상 Project 파일로 로드되므로(haiku `-p` 실측) 두면 중복만 된다. 이름을 바꿔 둔 파일(예: `CLAUDE.md.off`)은 그대로 둔다.
@@ -30,8 +31,9 @@ Windows면 pwsh 7 기준으로 바꿔 실행한다. 아래 `~`는 `$HOME`이다.
              if ($null -eq $old) { Remove-Item Env:\CLAUDE_CONFIG_DIR } else { $env:CLAUDE_CONFIG_DIR = $old }
          }
      }
-5. 검증: `$HOME` 아래 아무 레포에서 `wclaude -p --model claude-haiku-5-5 "Reply OK"`가 응답하면 로그인·설정 OK. 결과를 표로 보고한다.
+5. 검증: `$HOME` 아래 아무 레포에서 `wclaude -p --model claude-haiku-5-5 "Reply OK"`가 응답하면 로그인·설정 OK. `oauth-token`이 있으면 `CLAUDE_CODE_OAUTH_TOKEN="$(cat ~/.claude-worker/oauth-token)" wclaude -p --model claude-haiku-5-5 "Reply OK"`도 확인하고 파일 권한이 600인지 본다. 결과를 표로 보고한다.
 ```
 
+- cron 줄에는 `CLAUDE_CONFIG_DIR=$HOME/.claude-worker`와 함께 `CLAUDE_CODE_OAUTH_TOKEN=$(cat $HOME/.claude-worker/oauth-token)`을 붙인다(줄 형식은 `prompts/tmt-headless-setup.md` 5단계). 대화형 `wclaude`와 앨리스의 tmt 호출은 토큰 없이 `wclaude login` 세션을 쓴다.
 - `$HOME` 밖 레포(`/mnt/c/...` 등)에서는 `~/.claude/CLAUDE.md`가 로드되지 않으니 워커를 쓰지 않는다.
 - 앨리스의 호출 규칙(`~/.claude-worker`가 있으면 호출 단위로 `CLAUDE_CONFIG_DIR`을 붙인다)은 전역 규칙 `agent-rules/fragments/10-three-man-team.md`에 있다.
