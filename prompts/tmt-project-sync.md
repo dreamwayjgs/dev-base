@@ -44,7 +44,7 @@
    그다음 내 승인을 기다린다.
 
 적용 (승인 후)
-8. (b)와 승인된 `PROJECT.md` 삭제·문안 변경을 `PROJECT.md`에 쓴다(없으면 만든다. 비어도 된다). 역할 파일과 router를 기대본으로 덮어쓴다. 스테이징은 동기화가 만들거나 바꾼 파일만 한다. `git add -A`를 쓰지 않고, 관련 없는 미추적 파일은 보고만 한다. 프로젝트에 tmt-cli 블록이 있었거나 `tmt.json`이 있으면 `tmt init --apply`로 블록을 다시 넣는다. 끝나면 `CLAUDE.md`와 `AGENTS.md`가 같은지, 역할 파일과 기대본의 차이가 tmt-cli 블록뿐인지 확인한다.
+8. (b)와 승인된 `PROJECT.md` 삭제·문안 변경을 `PROJECT.md`에 쓴다(없으면 만든다. 비어도 된다). 역할 파일과 router를 기대본으로 덮어쓴다. 스테이징은 동기화가 만들거나 바꾼 파일만 한다. `git add -A`를 쓰지 않고, 관련 없는 미추적 파일은 보고만 한다. 프로젝트에 tmt-cli 블록이 있었거나 `tmt.json`이 있으면 `tmt init --apply`로 블록을 다시 넣는다. `tmt.json`이 있으면 `tmt check --static`(전역 `tmt` `1.4.0` 이상, 모델 호출 없음)을 돌려 결과를 11단계 보고에 넣는다. live check는 돌리지 않는다. 끝나면 `CLAUDE.md`와 `AGENTS.md`가 같은지, 역할 파일과 기대본의 차이가 tmt-cli 블록뿐인지 확인한다.
    - `PROJECT.md`에 트래커 언어 절(이슈 본문·댓글·PR 제목·본문의 언어)이 없으면 소유자에게 언어를 고르게 하고 그 절을 쓴다(예: `## 트래커 언어` — 이슈 본문·댓글·PR 제목·본문은 한국어, 커밋·코드·handoff·역할 산출물은 영어). tmt-cli `fa5a34f`부터 router 블록이 이 절을 가리키므로 비워 두지 않는다.
 9. manifest.md: 이번 기준 포크 커밋(`git -C <checkout> rev-parse --short origin/main`)을 `version`에, 오늘 날짜를 `synced`에 기록하고 `context_file: PROJECT.md`로 맞춘다. `operator`·`visibility` 줄이 비어 있으면 채운다. manifest가 없으면 포크 `templates/project-folder/new-setup.md`의 형식으로 만든다.
 10. 덮어쓰지 않는 것:
@@ -53,5 +53,5 @@
    - 프로젝트에 남은 `new-setup.md`, `VERSION`, `_temp/ARCHITECT.md`, `@.claude/skills/token-optimization.md` 같은 템플릿 잔재·옛 import 대상 파일: 삭제를 제안만 한다. 루트의 재개 메모·조사 메모·트래커 미러는 `prompts/handoff-cleanup.md` 12단계 몫이다.
 
 보고
-11. 파일별로 정리한다: 덮어쓴 파일, `PROJECT.md`로 옮긴 줄, `PROJECT.md`에서 지우거나 바꾼 줄, 버린 줄(a), 남은 질문(c), `ops/ENV.md`로 옮긴 좌표, tmt init 결과. 그다음 `git diff`를 보여준다. 커밋은 내 승인 후에 한다.
+11. 파일별로 정리한다: 덮어쓴 파일, `PROJECT.md`로 옮긴 줄, `PROJECT.md`에서 지우거나 바꾼 줄, 버린 줄(a), 남은 질문(c), `ops/ENV.md`로 옮긴 좌표, tmt init 결과, `tmt check --static` 결과. 그다음 `git diff`를 보여준다. 커밋은 내 승인 후에 한다.
 ```
