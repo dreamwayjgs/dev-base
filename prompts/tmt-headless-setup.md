@@ -14,7 +14,7 @@
    - 레이아웃이 umbrella다: manifest.md `layout: umbrella`, 코드 repo가 umbrella 안 하위 폴더(`loop.repo`가 될 경로)다. 단일 root면 멈추고 보고한다(헤드리스는 umbrella 전용).
    - `tmt --version`이 `tmt 1.0.0` 이상(`tmt X.Y.Z (<커밋>)`, `(dev)`가 아님)이고 `readlink -f "$(which tmt)"`가 전역 node_modules 아래다. 아니면 멈추고 `UPDATE.md`를 먼저 하라고 보고한다.
    - 트래커: 코드 repo `origin`이 `github.com/<owner>/<repo>`이고 `gh auth status`가 로그인 상태다(gh). 또는 `gitlab.com/<group>[/<sub>…]/<repo>`이고 `glab auth status`에 gitlab.com 로그인이 있다(glab; self-hosted GitLab은 미지원). 그 경로가 tracker project다(이슈·PR/MR이 있는 곳).
-   - `pgrep -af "tmt (probe|continue|headless)"`가 비어 있다. crontab에 이 umbrella의 `tmt headless`가 이미 있으면 보고한다.
+   - `pgrep -af "tmt (probe|continue|headless)"`가 비어 있다(Windows: `Get-CimInstance Win32_Process | ? CommandLine -match 'tmt.*(probe|continue|headless)'`). crontab(Windows: 러너 설정 파일)에 이 umbrella의 `tmt headless`가 이미 있으면 보고한다. 같은 트래커를 보는 headless가 다른 머신에 켜져 있으면 멈추고 보고한다(머신 간 lock이 없어 같은 이슈를 둘이 집는다).
    - umbrella와 코드 repo 모두 `git status -sb`가 `<브랜치>...origin/<브랜치>`(umbrella는 `main`, 코드 repo는 `loop.base`), 변경·미push 커밋 없음. 아니면 목록을 보고하고, 커밋·push·되돌리기 중 무엇을 할지 내 결정을 받는다(임의로 버리지 않는다).
 2. tmt.json 수정안 (승인 후 적용, tmt.json은 git-ignore라 커밋하지 않음):
    - `roles.alice`가 없으면 추가한다. omp `{"adapter": "omp", "model": "<모델>"}` 또는 claude `{"adapter": "claude", "model": "<모델>"}`(워커 설정 폴더는 crontab의 `CLAUDE_CONFIG_DIR`로). 앨리스에는 OpenCode를 쓰지 않는다(api는 중첩 `tmt`가 lock에 막히고, standalone은 아래 이유). 워커 역할(bob·richard·roger)의 OpenCode는 api transport(기본)로만 둔다. `"transport": "standalone"`이 있으면(fallback 포함) 빼는 안을 제안한다: 공유 서비스가 재시작할 때 살아 있는 standalone 세션까지 이어받아 두 프로세스가 같은 세션을 돌린다(tmt-cli #97). api 잔여 위험: 서비스 재시작 때 실패·중단한 턴이 tmt 밖에서 다시 돈다(#101, 열림).
@@ -30,6 +30,23 @@
    - 역할 점검 (전역 `tmt` `1.4.0` 이상): `tmt check --static`(모델 호출 없음)이 exit 0이어야 한다. 그다음 내 승인을 받아 `tmt check`(live, 중복을 뺀 역할 항목당 짧은 호출 1회)를 돌리고 출력 JSON을 보고한다. 실패 항목이 있으면 멈추고 보고한다. `tmt headless resume`도 같은 live check를 먼저 돌리고 실패하면 pause를 유지한다. 방금 live check가 통과했으면 아래 resume은 `tmt headless resume --skip-check`로 해도 된다.
    - 중첩 확인 (Alice가 안에서 `tmt`를 부를 수 있는지, 턴 2개): `tmt probe --role alice --prompt "Run exactly: echo \$TMT_LOCK_PID; tmt probe --role <싼 워커 역할> --prompt 'Reply OK only'. Report both outputs verbatim. Change no files."`. 안쪽 probe의 JSON(`"text":"OK"`)이 나오면 통과. `.tmt/.lock` 에러면 멈추고 출력을 보고한다. 끝난 뒤 `git status`가 깨끗하고 `.tmt/.lock`이 없어야 한다.
    - `mkdir -p .scratch`, `tmt headless pause --reason "setup"`, `tmt headless status`(paused, running 빈 목록) 확인, `tmt headless resume`, `tmt headless --once` 1회. `trigger: "label"`이고 라벨 단 이슈가 없으면 `{"picked":null}`이 정상이다. 출력과 `tmt headless top`을 보고한다.
-5. 스케줄러: crontab은 내가 직접 넣는다. 넣을 줄만 만들어 보여준다: `*/2 * * * * cd <umbrella 절대경로> && PATH=<node bin>:<harness bin>:/usr/local/bin:/usr/bin:/bin [CLAUDE_CONFIG_DIR=<워커 폴더>, claude 어댑터일 때] [CLAUDE_CODE_OAUTH_TOKEN=$(cat <워커 폴더>/oauth-token[.<계정>]), `oauthTokenFile`이 없는 claude 역할이 있을 때만. 토큰 파일은 이 umbrella가 쓸 계정의 것을 나에게 물어 고른다(`WORKER.md` 2단계)] [TMT_SLACK_WEBHOOK=<url>, notify를 넣었을 때만] tmt headless --once >> .scratch/cron.log 2>&1`. 경로는 이 머신에서 `which node`·`which <harness>`로 확인한 값이다. webhook URL은 비밀값이라 문서·커밋에 적지 않는다.
+5. 스케줄러: Windows면 crontab 대신 아래 "Windows (pwsh 러너)" 절을 따른다. crontab은 내가 직접 넣는다. 넣을 줄만 만들어 보여준다: `*/2 * * * * cd <umbrella 절대경로> && PATH=<node bin>:<harness bin>:/usr/local/bin:/usr/bin:/bin [CLAUDE_CONFIG_DIR=<워커 폴더>, claude 어댑터일 때] [CLAUDE_CODE_OAUTH_TOKEN=$(cat <워커 폴더>/oauth-token[.<계정>]), `oauthTokenFile`이 없는 claude 역할이 있을 때만. 토큰 파일은 이 umbrella가 쓸 계정의 것을 나에게 물어 고른다(`WORKER.md` 2단계)] [TMT_SLACK_WEBHOOK=<url>, notify를 넣었을 때만] tmt headless --once >> .scratch/cron.log 2>&1`. 경로는 이 머신에서 `which node`·`which <harness>`로 확인한 값이다. webhook URL은 비밀값이라 문서·커밋에 적지 않는다.
 6. 끝 보고: 적용한 설정 요약, 커밋 해시, 첫 사용법(이슈에 `tmt:investigate` → 조사 댓글 확인 → `tmt:loop-1` → PR), 상태 확인 명령(`tmt headless status`, `tmt headless top`, `.scratch/cron.log`), 멈추기(`tmt headless pause`).
 ```
+
+## Windows (pwsh 러너)
+
+Windows에는 cron 대신 dev-base `win-headless.ps1`을 쓴다(tmt-cli #103). 소유자가 보는 콘솔에서 도는 반자동 러너다. 작업 스케줄러는 쓰지 않는다(소유자 세션의 PATH·자격을 그대로 쓰고, 콘솔에서 바로 멈춘다).
+
+- 설정: `~/.config/tmt/win-headless-repos.json`(머신 로컬, 추적하지 않음, UPDATE에서 만들지 않음). 셋업 때 이 머신의 경로로 만든다. 파일이 없으면 러너가 예시를 출력하고 끝난다.
+  ```json
+  { "intervalSec": 120, "repos": [ { "path": "C:/Users/<you>/<...>/<project>-tmt", "env": { "CLAUDE_CONFIG_DIR": "C:/Users/<you>/.claude-worker" } } ] }
+  ```
+  `env`는 선택이다(cron 줄의 환경 변수 자리). `intervalSec` 최소 30.
+- 실행: `pwsh -NoProfile -File <dev-base>/win-headless.ps1`. interval마다 repo별로 `tmt headless --once`를 같은 콘솔의 자식 pwsh로 띄운다. 그 repo의 이전 실행이 아직 돌고 있으면 건너뛴다. 출력은 `<repo>/.scratch/win-headless.log`에 이어 붙이고, 콘솔에는 시작·건너뜀·이전 실행의 exit와 마지막 줄만 찍는다.
+- 멈추기: Ctrl+C 또는 창 닫기. 같은 콘솔이라 자식 트리도 신호를 받는다. 러너는 끝날 때 아직 살아 있는 자식마다 `taskkill /T /F /PID <pid>`를 한다. 멈추지 않고 쉬게 하려면 repo에서 `tmt headless pause`.
+- 앨리스 어댑터: claude 기본, omp 가능. OpenCode는 위 2단계 규칙대로 쓰지 않는다.
+
+문제가 생겼을 때 (러너 기능이 아니라 수동 절차):
+- 틱이 계속 `lockHeld`면 `tmt headless status`의 `lock` pid가 살아 있는 고아다. 확인 후 `taskkill /T /F /PID <pid>`. 죽은 pid의 lock은 다음 `tmt headless --once`가 지운다.
+- 중간 부모가 먼저 죽어 끊긴 워커(claude·omp)는 `taskkill /T`로 닿지 않는다. lock은 쥐지 않지만 계속 돌 수 있다. 찾기: `Get-CimInstance Win32_Process | ? { $_.Name -in 'claude.exe','omp.exe','node.exe' -and -not (Get-Process -Id $_.ParentProcessId -EA 0) }`. 소유자가 쓰는 세션이 섞일 수 있으니 목록을 보고 골라 끝낸다. 자주 생기면 러너에 Job Object(닫히면 자손 전부 종료)를 넣는 것을 검토한다.
